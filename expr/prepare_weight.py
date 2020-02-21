@@ -73,7 +73,7 @@ def prepare_for_gan():
 
   ml_model_file = os.path.join(root_dir, 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-48.pth')
   discriminator_model_file = os.path.join(root_dir, 'discriminator', 'tf_resnet152_450.5.50.512.1.lstm', 'model', 'epoch-20.pth')
-  expr_name = os.path.join(root_dir, 'vevd_gan_sc_expr', '')
+  expr_name = os.path.join(root_dir, 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.vevd_sc')
 
   model_cfg_file = expr_name + '.model.json'
   path_cfg_file = expr_name + '.path.json'
@@ -126,6 +126,6 @@ def prepare_for_gan():
 
 if __name__ == '__main__':
   # prepare_rl_from_ml()
-  prepare_for_gan_simple()
-  # prepare_for_gan()
+  # prepare_for_gan_simple()
+  prepare_for_gan()
   # prepare_for_gan_g_only()
