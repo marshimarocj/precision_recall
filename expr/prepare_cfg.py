@@ -420,8 +420,8 @@ def gen_gan_simple_cider_sc_cfg():
     'g_freeze_epoch': 1,
 
     'd_noise': .5,
-    'dim_kernel': 5,
-    'num_kernel': 50,
+    'dim_kernel': 50,
+    'num_kernel': 5,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
