@@ -612,7 +612,7 @@ def gen_gan_cider_sc_cfg():
   root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
-  out_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr')
+  out_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr')
 
   ft_name = 'tf_resnet152_450'
 
@@ -673,6 +673,7 @@ def gen_gan_cider_sc_cfg():
     'word_file': os.path.join(annotation_dir, 'int2word.pkl'),
     'output_dir': output_dir,
     'model_file': os.path.join(output_dir, 'model', 'pretrain.pth'),
+    'df_file': os.path.join(annotation_dir, 'document_frequency.pkl'),
   }
   path_cfg_file = '%s.path.json'%outprefix
 
