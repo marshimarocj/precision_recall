@@ -535,7 +535,8 @@ def gen_gan_sc_pretrain_cfg():
 
 
 def gen_gan_sc_cfg():
-  root_dir = '/data1/jiac/mscoco' # mercurial
+  # root_dir = '/data1/jiac/mscoco' # mercurial
+  root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr')
@@ -576,7 +577,7 @@ def gen_gan_sc_cfg():
   }
 
   model_cfg = model.gan_sc.gen_cfg(**params)
-  outprefix = '%s.%d.%d.%d.%s.%s.%d.%d.%d.%.2f.%d.%.1f'%(
+  outprefix = '%s.%d.%d.%d.%s.%s.%d.%d.%d.%.2f.%d.%.1f.vevd_sc'%(
     os.path.join(out_dir, ft_name),
     params['dim_hidden'], params['dim_embed'], params['tied'], params['cell'], params['g_baseline'],
     params['dim_kernel'], params['num_kernel'], params['d_iter'], params['d_val_acc'], params['d_late_fusion'], params['d_quality_alpha']
@@ -690,8 +691,8 @@ if __name__ == '__main__':
   # gen_vevd_sc_cfg()
   # gen_vevd_rl_cfg()
 
-  gen_gan_simple_sc_cfg()
+  # gen_gan_simple_sc_cfg()
   # gen_gan_simple_cider_sc_cfg()
   # gen_gan_sc_pretrain_cfg()
-  # gen_gan_sc_cfg()
+  gen_gan_sc_cfg()
   # gen_gan_cider_sc_cfg()
