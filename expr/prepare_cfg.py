@@ -694,5 +694,5 @@ if __name__ == '__main__':
   # gen_gan_simple_sc_cfg()
   # gen_gan_simple_cider_sc_cfg()
   # gen_gan_sc_pretrain_cfg()
-  gen_gan_sc_cfg()
-  # gen_gan_cider_sc_cfg()
+  # gen_gan_sc_cfg()
+  gen_gan_cider_sc_cfg()
