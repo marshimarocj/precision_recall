@@ -22,7 +22,8 @@ import model.gan_cider_sc
 '''
 def gen_discriminator_cfg():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/data1/jiac/MSCOCO' # uranus
+  root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'discriminator')
@@ -33,10 +34,10 @@ def gen_discriminator_cfg():
     os.mkdir(out_dir)
 
   params = {
-    'num_epoch': 50,
+    'num_epoch': 21,
     'lr': 1e-3,
-    'dim_kernel': 5,
-    'num_kernel': 50,
+    'dim_kernel': 64,
+    'num_kernel': 8,
     'discriminator_noise': .5,
     'dim_ft': 2048,
     'num_sentence': 5,
@@ -80,7 +81,9 @@ def gen_discriminator_cfg():
 
 
 def gen_simple_discriminator_cfg():
-  root_dir = '/data1/jiac/mscoco' # mercurial
+  # root_dir = '/data1/jiac/mscoco' # mercurial
+  # root_dir = '/data1/jiac/MSCOCO' # uranus
+  root_dir = '/mnt/data1/jiac/mscoco' # neptune
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'simple_discriminator')
@@ -91,10 +94,10 @@ def gen_simple_discriminator_cfg():
     os.mkdir(out_dir)
 
   params = {
-    'num_epoch': 50,
+    'num_epoch': 21,
     'lr': 1e-3,
-    'dim_kernel': 50,
-    'num_kernel': 5,
+    'dim_kernel': 64,
+    'num_kernel': 8,
     'discriminator_noise': .5,
     'dim_ft': 2048,
 
@@ -685,7 +688,7 @@ def gen_gan_cider_sc_cfg():
 
 
 if __name__ == '__main__':
-  # gen_discriminator_cfg()
+  gen_discriminator_cfg()
   # gen_simple_discriminator_cfg()
   # gen_margin_discriminator_cfg()
   # gen_vevd_ml_cfg()
@@ -696,4 +699,4 @@ if __name__ == '__main__':
   # gen_gan_simple_cider_sc_cfg()
   # gen_gan_sc_pretrain_cfg()
   # gen_gan_sc_cfg()
-  gen_gan_cider_sc_cfg()
+  # gen_gan_cider_sc_cfg()
