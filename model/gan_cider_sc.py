@@ -123,6 +123,7 @@ class TrnTst(model.gan_sc.TrnTst):
       cider_rewards = sample_scores - greedy_scores
     else:
       cider_rewards = sample_scores - sample_scores.mean(1, keepdims=True)
+    cider_rewards = torch.Tensor(cider_rewards).cuda()
 
     # 3. eval d reward
     EOS = 1
@@ -171,7 +172,6 @@ class TrnTst(model.gan_sc.TrnTst):
 
     cider_alpha = self.model_cfg.d_cider_alpha
     rewards = (cider_alpha * cider_rewards + d_rewards) / (1. + cider_alpha)
-    rewards = torch.Tensor(rewards).cuda()
     rewards = rewards.view(b*num_sample)
     rewards = rewards.detach()
 
