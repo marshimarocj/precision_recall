@@ -408,18 +408,21 @@ def gather_predict_score():
 
 
 def eval_precision_recall():
-  root_dir = '/data1/jiac/mscoco' # mercurial
+  # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
+  root_dir = '/hdd/mscoco' # aws
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
-  epoch = 38
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
+  # epoch = 38
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
   # epoch = 48
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_rl_expr', 'tf_resnet152_450.512.512.0.0.lstm')
   # epoch = 36
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
   # epoch = 35
+  pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0', 'pred')
+  epoch = 16
 
   # pred_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.json')
   # out_precision_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.precision.json')
@@ -467,9 +470,9 @@ def eval_precision_recall():
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
 
-    # precisions = eval_precision(vid2sent_scores, vid2gt, num)
-    # with open(out_precision_file, 'w') as fout:
-    #   json.dump(precisions, fout)
+    precisions = eval_precision(vid2sent_scores, vid2gt, num)
+    with open(out_precision_file, 'w') as fout:
+      json.dump(precisions, fout)
 
     # recalls = eval_recall(vid2sent_scores, num)
     recalls = eval_corpus_recall(vid2sent_scores, num)
@@ -499,6 +502,6 @@ def predict_eval_discriminator():
 if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
-  gather_predict_score()
-  # eval_precision_recall()
+  # gather_predict_score()
+  eval_precision_recall()
   # predict_eval_discriminator()
