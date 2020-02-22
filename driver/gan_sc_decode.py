@@ -63,6 +63,6 @@ if __name__ == '__main__':
     path_cfg.predict_file = os.path.join(path_cfg.output_dir, 'pred', 
       '%d-%s-%d-%d.json'%(opts.best_epoch, model_cfg.strategy, opts.beam_width, opts.pool_size))
 
-  trntst = model.gan_sc.TrnTstDecode(model_cfg, path_cfg, gpuids)
+  trntst = model.gan_sc.TrnTstDecoder(model_cfg, path_cfg, gpuids)
   tst_reader = model.data.TstReader(path_cfg.tst_ftfile, path_cfg.tst_videoid_file)
   trntst.test(m, tst_reader)
