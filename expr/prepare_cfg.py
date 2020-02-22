@@ -580,7 +580,7 @@ def gen_gan_sc_cfg():
   }
 
   model_cfg = model.gan_sc.gen_cfg(**params)
-  outprefix = '%s.%d.%d.%d.%s.%s.%d.%d.%d.%.2f.%d.%.1f.vevd_sc'%(
+  outprefix = '%s.%d.%d.%d.%s.%s.%d.%d.%d.%.2f.%d.%.1f'%(
     os.path.join(out_dir, ft_name),
     params['dim_hidden'], params['dim_embed'], params['tied'], params['cell'], params['g_baseline'],
     params['dim_kernel'], params['num_kernel'], params['d_iter'], params['d_val_acc'], params['d_late_fusion'], params['d_quality_alpha']
