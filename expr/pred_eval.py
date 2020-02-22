@@ -305,23 +305,27 @@ def predict_eval():
 
 def predict_decode():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/data1/jiac/MSCOCO' # uranus
+  root_dir = '/hdd/mscoco' # aws
 
   # model_name = 'pytorch/vevd_ml_expr/tf_resnet152_450.512.512.0.lstm'
   # model_name = 'pytorch/vevd_sc_expr/tf_resnet152_450.512.512.0.lstm'
   # model_name = 'pytorch/vevd_rl_expr/tf_resnet152_450.512.512.0.0.lstm'
   # python_file = 'vevd_ml_decode.py'
 
-  model_name = 'pytorch/vevd_gan_simple_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80'
-  python_file = 'gan_simple_sc_decode.py'
+  # model_name = 'pytorch/vevd_gan_simple_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80'
+  # python_file = 'gan_simple_sc_decode.py'
+
+  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
+  python_file = 'gan_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
   model_cfg_file = os.path.join(root_dir, model_name + '.model.json')
   path_cfg_file = os.path.join(root_dir, model_name + '.path.json')
 
-  gpuid = 0
-  best_epochs = [35]
+  gpuid = 2
+  best_epochs = [16]
 
   predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid, 
     strategy='beam', beam_width=100, pool_size=100)
@@ -490,8 +494,8 @@ def predict_eval_discriminator():
 
 
 if __name__ == '__main__':
-  predict_eval()
-  # predict_decode()
+  # predict_eval()
+  predict_decode()
   # gather_predict_score()
   # eval_precision_recall()
   # predict_eval_discriminator()
