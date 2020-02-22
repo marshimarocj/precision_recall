@@ -93,7 +93,7 @@ def prepare_for_gan():
   # expr_name = os.path.join(root_dir, 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0')
 
   ml_model_file = os.path.join(root_dir, 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-38.pth')
-  discriminator_model_file = os.path.join(root_dir, 'discriminator', 'tf_resnet152_450.50.5.512.0.lstm', 'model', 'epoch-20.pth')
+  discriminator_model_file = os.path.join(root_dir, 'discriminator', 'tf_resnet152_450.50.5.512.1.lstm', 'model', 'epoch-20.pth')
   expr_name = os.path.join(root_dir, 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.50.5.5.0.80.1.0.8')
 
   model_cfg_file = expr_name + '.model.json'
