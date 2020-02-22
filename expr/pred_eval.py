@@ -317,7 +317,7 @@ def predict_decode():
   # python_file = 'gan_simple_sc_decode.py'
 
   model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
-  python_file = 'gan_sc.py'
+  python_file = 'gan_sc_decode.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
