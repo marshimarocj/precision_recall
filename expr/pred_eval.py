@@ -36,7 +36,7 @@ def eval(predict_file, groundtruth_file):
   meteor_scorer = Meteor()
   rouge_scorer = Rouge()
   cider_scorer = Cider()
-  spice_scorer = Spice()
+  # spice_scorer = Spice()
   # closest score
   res_bleu, _ = bleu_scorer.compute_score(gts, res)
   # metero handles the multi references (don't know the details yet)
