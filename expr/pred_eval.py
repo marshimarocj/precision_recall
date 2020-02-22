@@ -12,7 +12,7 @@ from bleu.bleu import Bleu
 from cider.cider import Cider
 from rouge.rouge import Rouge
 from meteor.meteor import Meteor
-# from spice.spice import Spice
+from spice.spice import Spice
 
 
 '''func
@@ -36,7 +36,7 @@ def eval(predict_file, groundtruth_file):
   meteor_scorer = Meteor()
   rouge_scorer = Rouge()
   cider_scorer = Cider()
-  # spice_scorer = Spice()
+  spice_scorer = Spice()
   # closest score
   res_bleu, _ = bleu_scorer.compute_score(gts, res)
   # metero handles the multi references (don't know the details yet)
@@ -46,14 +46,14 @@ def eval(predict_file, groundtruth_file):
   res_rouge, _ = rouge_scorer.compute_score(gts, res)
   # average
   res_cider, _ = cider_scorer.compute_score(gts, res)
-  # res_spice, _ = spice_scorer.compute_score(gts, res)
+  res_spice, _ = spice_scorer.compute_score(gts, res)
 
   out = {
     'bleu': res_bleu, 
     'meteor': res_meteor,
     'rouge': res_rouge,
     'cider': res_cider,
-    # 'spice': res_spice,
+    'spice': res_spice,
   }
 
   return out
