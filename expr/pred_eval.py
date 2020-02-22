@@ -46,7 +46,7 @@ def eval(predict_file, groundtruth_file):
   res_rouge, _ = rouge_scorer.compute_score(gts, res)
   # average
   res_cider, _ = cider_scorer.compute_score(gts, res)
-  res_spice, _ = spice_scorer.compute_score(gts, res)
+  # res_spice, _ = spice_scorer.compute_score(gts, res)
 
   out = {
     'bleu': res_bleu, 
