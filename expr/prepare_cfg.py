@@ -393,10 +393,10 @@ def gen_gan_simple_sc_cfg():
 
 
 def gen_gan_simple_cider_sc_cfg():
-  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/data1/jiac/MSCOCO' # uranus
   # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
-  # root_dir = '/hdd/mscoco'
+  root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr')
@@ -412,7 +412,7 @@ def gen_gan_simple_cider_sc_cfg():
     'dim_hidden': 512,
     'cell': 'lstm',
     'dim_ft': 2048,
-    'reward_alpha': 5.,
+    'reward_alpha': 1.,
   
     'g_dropin': 0.0,
     'g_dropout': 0.0,
@@ -426,8 +426,8 @@ def gen_gan_simple_cider_sc_cfg():
     'g_freeze_epoch': 1,
 
     'd_noise': .5,
-    'dim_kernel': 64,
-    'num_kernel': 8,
+    'dim_kernel': 50,
+    'num_kernel': 5,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
