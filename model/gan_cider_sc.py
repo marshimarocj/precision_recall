@@ -190,3 +190,6 @@ class TrnTst(model.gan_sc.TrnTst):
     loss = self.model(
       'g_trn', log_probs=log_probs, log_masks=log_masks, rewards=rewards)
     loss.backward()
+
+
+TrnTstDecoder = model.gan_sc.TrnTstDecoder

@@ -22,8 +22,8 @@ import model.gan_cider_sc
 '''
 def gen_discriminator_cfg():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  # root_dir = '/data1/jiac/MSCOCO' # uranus
-  root_dir = '/hdd/mscoco' # aws
+  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'discriminator')
@@ -41,7 +41,7 @@ def gen_discriminator_cfg():
     'discriminator_noise': .5,
     'dim_ft': 2048,
     'num_sentence': 5,
-    'tied_sentence_encoder': False,
+    'tied_sentence_encoder': True,
 
     'cell': 'lstm',
     'dim_input': 512,
@@ -688,7 +688,7 @@ def gen_gan_cider_sc_cfg():
 
 
 if __name__ == '__main__':
-  # gen_discriminator_cfg()
+  gen_discriminator_cfg()
   # gen_simple_discriminator_cfg()
   # gen_margin_discriminator_cfg()
   # gen_vevd_ml_cfg()
@@ -698,5 +698,5 @@ if __name__ == '__main__':
   # gen_gan_simple_sc_cfg()
   # gen_gan_simple_cider_sc_cfg()
   # gen_gan_sc_pretrain_cfg()
-  gen_gan_sc_cfg()
+  # gen_gan_sc_cfg()
   # gen_gan_cider_sc_cfg()

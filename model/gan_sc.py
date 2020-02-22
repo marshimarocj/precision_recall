@@ -393,3 +393,37 @@ class TrnTst(framework.GanTrnTst):
   def change_lr(self, history, metrics):
     history.append(metrics)
     return history
+
+
+class TrnTstDecoder(TrnTst):
+  def g_predict_in_tst(self):
+    vid2predict = {}
+    for data in self.tst_reader.yield_batch(self.model_cfg.tst_batch_size):
+      fts = torch.Tensor(data['fts']).cuda()
+
+      with torch.no_grad():
+        beam_cum_log_probs, beam_pres, beam_ends, out_wids = self.model(
+          'g_tst', fts=fts, strategy='beam')
+      beam_cum_log_probs = beam_cum_log_probs.data.cpu().numpy()
+      beam_pres = beam_pres.data.cpu().numpy()
+      beam_ends = beam_ends.data.cpu().numpy()
+      out_wids = out_wids.data.cpu().numpy()
+
+      candidate_scores = model.util.beamsearch_recover_multiple_captions(
+        out_wids, beam_cum_log_probs, beam_pres, beam_ends, self.model_cfg.pool_size)
+      
+      for i, candidate_score in enumerate(candidate_scores):
+        vid = data['vids'][i]
+        out = []
+        for d in candidate_score:
+          sent = np.array(d['sent'])
+          predict = self.int2str(np.expand_dims(sent, 0))[0]
+          score = float(d['score'])
+          out.append({
+            'sent': predict,
+            'score': score,
+          }) 
+        vid2predict[vid] = out
+
+    with open(self.path_cfg.predict_file, 'w') as fout:
+      json.dump(vid2predict, fout, indent=2)
