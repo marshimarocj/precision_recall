@@ -475,7 +475,8 @@ def eval_precision_recall():
     for vid in vid2sent_scores:
       avg += len(vid2sent_scores[vid])
     avg /= len(vid2sent_scores)
-    print num = min(num, avg)
+    num = min(num, avg)
+    print num
 
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
