@@ -471,9 +471,11 @@ def eval_precision_recall():
       vid2sent_scores = json.load(f)
 
     num = 100
+    avg = 0
     for vid in vid2sent_scores:
-      num = min(num, len(vid2sent_scores[vid]))
-    print num
+      avg += len(vid2sent_scores[vid])
+    avg /= len(vid2sent_scores)
+    print num = min(num, avg)
 
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
