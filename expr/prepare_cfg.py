@@ -650,7 +650,7 @@ def gen_gan_cider_sc_cfg():
     'd_val_acc': .8,
     'd_late_fusion': True,
     'd_quality_alpha': .8,
-    'd_cider_alpha': 5.,
+    'd_cider_alpha': 1.,
   }
 
   model_cfg = model.gan_cider_sc.gen_cfg(**params)
