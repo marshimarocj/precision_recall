@@ -454,36 +454,36 @@ def eval_precision_recall():
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.precision.json'%epoch),
   ]
-  # out_recall_files = [
-  #   os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.recall.json'%epoch),
+  out_recall_files = [
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.recall.json'%epoch),
-  # ]
-  out_corpus_recall_files = [
-    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
   ]
+  # out_corpus_recall_files = [
+  #   os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
+  # ]
 
-  # for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_recall_files):
-  for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_corpus_recall_files):
+  for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_recall_files):
+  # for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_corpus_recall_files):
     with open(pred_file) as f:
       vid2sent_scores = json.load(f)
 
     num = 100
-    # for vid in vid2sent_scores:
-    #   num = min(num, len(vid2sent_scores[vid]))
+    for vid in vid2sent_scores:
+      num = min(num, len(vid2sent_scores[vid]))
     print num
 
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
 
-    # precisions = eval_precision(vid2sent_scores, vid2gt, num)
-    # with open(out_precision_file, 'w') as fout:
-    #   json.dump(precisions, fout)
+    precisions = eval_precision(vid2sent_scores, vid2gt, num)
+    with open(out_precision_file, 'w') as fout:
+      json.dump(precisions, fout)
 
-    # recalls = eval_recall(vid2sent_scores, num)
-    recalls = eval_corpus_recall(vid2sent_scores, num)
+    recalls = eval_recall(vid2sent_scores, num)
+    # recalls = eval_corpus_recall(vid2sent_scores, num)
     with open(out_recall_file, 'w') as fout:
       json.dump(recalls, fout)
 
