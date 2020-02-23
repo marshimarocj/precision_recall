@@ -488,9 +488,9 @@ def eval_precision_recall():
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
 
-    precisions = eval_precision(vid2sent_scores, vid2gt, num)
-    with open(out_precision_file, 'w') as fout:
-      json.dump(precisions, fout)
+    # precisions = eval_precision(vid2sent_scores, vid2gt, num)
+    # with open(out_precision_file, 'w') as fout:
+    #   json.dump(precisions, fout)
 
     # recalls = eval_recall(vid2sent_scores, num)
     recalls = eval_corpus_recall(vid2sent_scores, num)
