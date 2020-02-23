@@ -49,9 +49,13 @@ def prepare_for_gan_simple():
   # discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.512.1.512.lstm', 'model', 'epoch-20.pth')
   # expr_name = os.path.join(root_dir, 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.512.1.5.0.80.5.0')
 
+  # ml_model_file = os.path.join(root_dir, 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-38.pth')
+  # discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.64.8.512.lstm', 'model', 'epoch-20.pth')
+  # expr_name = os.path.join(root_dir, 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.64.8.5.0.80')
+
   ml_model_file = os.path.join(root_dir, 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-38.pth')
-  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.64.8.512.lstm', 'model', 'epoch-20.pth')
-  expr_name = os.path.join(root_dir, 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.64.8.5.0.80')
+  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.50.5.512.lstm', 'model', 'epoch-20.pth')
+  expr_name = os.path.join(root_dir, 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.50.5.5.0.80')
 
   model_cfg_file = expr_name + '.model.json'
   path_cfg_file = expr_name + '.path.json'
@@ -147,6 +151,6 @@ def prepare_for_gan():
 
 if __name__ == '__main__':
   # prepare_rl_from_ml()
-  # prepare_for_gan_simple()
-  prepare_for_gan()
+  prepare_for_gan_simple()
+  # prepare_for_gan()
   # prepare_for_gan_g_only()

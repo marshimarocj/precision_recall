@@ -352,8 +352,8 @@ def gen_gan_simple_sc_cfg():
     'g_freeze_epoch': -1,
 
     'd_noise': .5,
-    'dim_kernel': 64,
-    'num_kernel': 8,
+    'dim_kernel': 50,
+    'num_kernel': 5,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
@@ -695,8 +695,8 @@ if __name__ == '__main__':
   # gen_vevd_sc_cfg()
   # gen_vevd_rl_cfg()
 
-  # gen_gan_simple_sc_cfg()
-  gen_gan_simple_cider_sc_cfg()
+  gen_gan_simple_sc_cfg()
+  # gen_gan_simple_cider_sc_cfg()
   # gen_gan_sc_pretrain_cfg()
   # gen_gan_sc_cfg()
   # gen_gan_cider_sc_cfg()

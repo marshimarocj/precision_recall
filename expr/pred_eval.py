@@ -272,18 +272,18 @@ def predict_eval():
   # model_name = 'pytorch/vevd_gan_simple_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80'
   # python_file = 'gan_simple_sc.py'
 
-  model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.50.5.5.0.80.5.0'
-  python_file = 'gan_simple_cider_sc.py'
+  # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.50.5.5.0.80.5.0'
+  # python_file = 'gan_simple_cider_sc.py'
 
-  # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
-  # python_file = 'gan_sc.py'
+  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
+  python_file = 'gan_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
   model_cfg_file = os.path.join(root_dir, model_name + '.model.json')
   path_cfg_file = os.path.join(root_dir, model_name + '.path.json')
 
-  gpuid = 0
+  gpuid = 3
 
   best_epochs = auto_select(logdir)
   print best_epochs
@@ -470,12 +470,10 @@ def eval_precision_recall():
     with open(pred_file) as f:
       vid2sent_scores = json.load(f)
 
-    num = 100
-    avg = 0
+    num = 0
     for vid in vid2sent_scores:
-      avg += len(vid2sent_scores[vid])
-    avg /= len(vid2sent_scores)
-    num = min(num, avg)
+      num+= len(vid2sent_scores[vid])
+    num /= len(vid2sent_scores)
     print num
 
     with open(gt_file) as f:
@@ -511,8 +509,8 @@ def predict_eval_discriminator():
 
 
 if __name__ == '__main__':
-  # predict_eval()
+  predict_eval()
   # predict_decode()
   # gather_predict_score()
-  eval_precision_recall()
+  # eval_precision_recall()
   # predict_eval_discriminator()
