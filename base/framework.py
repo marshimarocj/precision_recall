@@ -376,7 +376,10 @@ class GanTrnTst(object):
       # discriminator phase
       if self.model_cfg.d_iter > 0 and step % self.model_cfg.d_iter == 0:
         # print self.model_cfg.d_num_epoch
-        for _ in range(self.model_cfg.d_num_epoch):
+        d_num_epoch = self.model_cfg.d_num_epoch
+        if self.model_cfg.g_freeze  and epoch < self.model_cfg.g_freeze_epoch:
+          d_num_epoch = 1
+        for _ in range(d_num_epoch):
           self.model.train()
           for data in buffer:
             self.d_optimizer.zero_grad()
