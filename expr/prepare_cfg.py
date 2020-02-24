@@ -13,6 +13,7 @@ import model.gan_sc
 import model.gan_simple_cider_sc
 import model.gan_cider_sc
 import model.vead_gan_simple_sc
+import model.vead_gan_simple_cider_sc
 
 
 '''func
@@ -418,8 +419,8 @@ def gen_vead_gan_simple_sc_cfg():
     'num_sample': 1,
     'g_num_epoch': 50,
     'g_lr': 1e-5,
-    'g_freeze': False,
-    'g_freeze_epoch': -1,
+    'g_freeze': True,
+    'g_freeze_epoch': 1,
 
     'dim_att_ft': 2048,
     'num_att_ft': 36,
@@ -431,8 +432,8 @@ def gen_vead_gan_simple_sc_cfg():
     'sim': 'add',
 
     'd_noise': .5,
-    'dim_kernel': 5,
-    'num_kernel': 50,
+    'dim_kernel': 50,
+    'num_kernel': 5,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
@@ -769,9 +770,92 @@ def gen_gan_cider_sc_cfg():
     json.dump(path_cfg, fout, indent=2)
 
 
+def gen_vead_gan_simple_cider_sc_cfg():
+  root_dir = '/hdd/mscoco' # aws
+  split_dir = os.path.join(root_dir, 'pytorch', 'split')
+  annotation_dir = os.path.join(root_dir, 'aux')
+  out_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_simple_cider_sc_expr')
+
+  ft_name = 'tf_resnet152_450'
+
+  if not os.path.exists(out_dir):
+    os.mkdir(out_dir)
+
+  params = {
+    'max_step': 20,
+    'dim_embed': 512,
+    'dim_hidden': 512,
+    'cell': 'lstm',
+    'dim_ft': 2048,
+  
+    'g_dropin': 0.0,
+    'g_dropout': 0.0,
+    'beam_width': 5,
+    'num_sample': 1,
+    'g_num_epoch': 50,
+    'g_lr': 1e-5,
+    'g_freeze': True,
+    'g_freeze_epoch': 1,
+
+    'dim_att_ft': 2048,
+    'num_att_ft': 36,
+    'dim_key': 512,
+    'dim_val': 512,
+    'tied_key_val': False,
+    'val_proj': True,
+    'dim_boom': 2048,
+    'sim': 'add',
+
+    'd_noise': .5,
+    'dim_kernel': 5,
+    'num_kernel': 50,
+    'd_num_epoch': 5,
+    'd_lr': 1e-3,
+    'd_iter': 5,
+    'd_val_acc': .8,
+    'reward_alpha',
+  }
+
+  model_cfg = model.vead_gan_simple_cider_sc.gen_cfg(**params)
+  outprefix = '%s.%d.%d.%d.%d.%d.%s.%d.%d.%d.%.2f.%.1f.%.1f'%(
+    os.path.join(out_dir, 'bottomup'),
+    params['dim_hidden'], params['dim_embed'], params['dim_key'], params['dim_val'], params['dim_boom'], params['sim'],
+    params['dim_kernel'], params['num_kernel'], params['d_iter'], params['d_val_acc'],
+    params['reward_alpha']
+  )
+  model_cfg_file = '%s.model.json'%outprefix
+  model_cfg.save(model_cfg_file)
+
+  output_dir = outprefix
+  path_cfg = {
+    'trn_ftfile': os.path.join(root_dir, 'mp_feature', ft_name, 'trn_ft.npy'),
+    'val_ftfile': os.path.join(root_dir, 'mp_feature', ft_name, 'val_ft.npy'),
+    'tst_ftfile': os.path.join(root_dir, 'mp_feature', ft_name, 'tst_ft.npy'),
+    'trn_att_ftfile': os.path.join(root_dir, 'bottom_up_feature', 'trn_ft.npy'),
+    'val_att_ftfile': os.path.join(root_dir, 'bottom_up_feature', 'val_ft.npy'),
+    'tst_att_ftfile': os.path.join(root_dir, 'bottom_up_feature', 'tst_ft.npy'),
+    'trn_annotation_file': os.path.join(split_dir, 'trn_id_caption_mask.pkl'),
+    'val_annotation_file': os.path.join(split_dir, 'val_id_caption_mask.pkl'),
+    'split_dir': split_dir,
+    'annotation_dir': annotation_dir,
+    'groundtruth_file': os.path.join(annotation_dir, 'human_caption_dict.pkl'),
+    'word_file': os.path.join(annotation_dir, 'int2word.pkl'),
+    'output_dir': output_dir,
+    'df_file': os.path.join(annotation_dir, 'document_frequency.pkl'),
+    'model_file': os.path.join(output_dir, 'model', 'pretrain.pth'),
+  }
+  path_cfg_file = '%s.path.json'%outprefix
+
+  if not os.path.exists(path_cfg['output_dir']):
+    os.mkdir(path_cfg['output_dir'])
+
+  with open(path_cfg_file, 'w') as fout:
+    json.dump(path_cfg, fout, indent=2)
+
+
 if __name__ == '__main__':
   # gen_discriminator_cfg()
-  gen_simple_discriminator_cfg()
+  # gen_simple_discriminator_cfg()
   # gen_margin_discriminator_cfg()
   # gen_vevd_ml_cfg()
   # gen_vevd_sc_cfg()
@@ -783,4 +867,5 @@ if __name__ == '__main__':
   # gen_gan_sc_cfg()
   # gen_gan_cider_sc_cfg()
 
-  # gen_vead_gan_simple_sc_cfg()
+  gen_vead_gan_simple_sc_cfg()
+  # gen_vead_gan_simple_cider_sc_cfg()

@@ -226,11 +226,13 @@ class AttPathCfg(framework.PathCfg):
     self.val_annotation_file = ''
     self.word_file = ''
     self.groundtruth_file = ''
+    self.df_file = ''
 
     # automatically generated paths
     self.trn_videoid_file = ''
     self.val_videoid_file = ''
     self.tst_videoid_file = ''
+
 
 
 def transform_predict_captionid_array_to_list(captionids): # (None, step)
