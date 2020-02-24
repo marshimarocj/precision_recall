@@ -272,7 +272,7 @@ class TrnTst(framework.GanTrnTst):
     captionids = torch.LongTensor(captionids).cuda()
     lens = torch.LongTensor(data['pos_lens']).cuda()
     b = fts.size(0)
-    y = torch.ones(b, dtype=torch.long).cuda()
+    y = 0.9*torch.ones(b, dtype=torch.long).cuda()
     loss = self.model('d_trn', fts=fts, sents=captionids, lens=lens, y=y)
 
     captionids = model.util.pad_sequence(data['neg_captionids'])
