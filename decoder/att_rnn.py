@@ -36,6 +36,7 @@ class CellConfig(framework.ModuleConfig):
   def __init__(self):
     super(CellConfig, self).__init__()
 
+    self.dim_embed = 256
     self.dim_hidden = 256
     self.dim_key = 256
     self.dim_val = 256
