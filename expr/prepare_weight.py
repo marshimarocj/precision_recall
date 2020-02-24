@@ -26,8 +26,8 @@ def prepare_rl_from_ml():
 
 def prepare_for_gan_simple():
   # root_dir = '/data1/jiac/mscoco/pytorch' # mercurial
-  root_dir = '/data1/jiac/MSCOCO/pytorch' # uranus
-  # root_dir = '/hdd/mscoco/pytorch' # aws
+  # root_dir = '/data1/jiac/MSCOCO/pytorch' # uranus
+  root_dir = '/hdd/mscoco/pytorch' # aws
 
   # ml_model_file = os.path.join(root_dir, 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-38.pth')
   # discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.5.50.512.lstm', 'model', 'epoch-20.pth')
@@ -53,9 +53,13 @@ def prepare_for_gan_simple():
   # discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.64.8.512.lstm', 'model', 'epoch-20.pth')
   # expr_name = os.path.join(root_dir, 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.64.8.5.0.80')
 
-  ml_model_file = os.path.join(root_dir, 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-38.pth')
-  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.50.5.512.lstm', 'model', 'epoch-20.pth')
-  expr_name = os.path.join(root_dir, 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.50.5.5.0.80')
+  # ml_model_file = os.path.join(root_dir, 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm', 'model', 'epoch-38.pth')
+  # discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.50.5.512.lstm', 'model', 'epoch-20.pth')
+  # expr_name = os.path.join(root_dir, 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.50.5.5.0.80')
+
+  ml_model_file = os.path.join(root_dir, 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add', 'model', 'epoch-23.pth')
+  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.5.50.512.lstm', 'model', 'epoch-20.path')
+  expr_name = os.path.join(root_dir, 'vead_gan_simple_sc_expr', 'bottomup.512.512.512.512.2048.add.50.5.5.0.80')
 
   model_cfg_file = expr_name + '.model.json'
   path_cfg_file = expr_name + '.path.json'
