@@ -29,7 +29,7 @@ class Config(framework.ModuleConfig):
 
     self.num_sample = 1
 
-    self.subcfgs[CELL] = att_rnn.CellConfig()
+    self.subcfgs[CELL] = decoder.att_rnn.CellConfig()
 
   def _assert(self):
     assert self.dim_embed == self.subcfgs[CELL].dim_embed
