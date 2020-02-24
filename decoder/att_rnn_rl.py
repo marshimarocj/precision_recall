@@ -42,7 +42,7 @@ class Decoder(decoder.att_rnn.Decoder):
       greedy_out_wids = self.greedy_decode(init_state, att_fts, att_masks)
       return sample_out_wids, log_probs, greedy_out_wids
     elif mode == 'val':
-      return self.greedy_decode(init_state)
+      return self.greedy_decode(init_state, att_fts, att_masks)
     elif mode == 'tst':
       if kwargs['strategy'] == 'beam':
         return self.beam_decode(init_state, att_fts, att_masks)
