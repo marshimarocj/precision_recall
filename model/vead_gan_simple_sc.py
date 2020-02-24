@@ -334,12 +334,12 @@ class TrnTst(framework.GanTrnTst):
     metrics = {}
 
     bleu_scorer = bleu.Bleu(4)
-    bleu_score, _ = bleu_scorer.compute_score(self.tst_reader.videoid2captions, vid2predicts)
+    bleu_score, _ = bleu_scorer.compute_score(self.tst_reader.vid2captions, vid2predicts)
     for i in range(4):
       metrics['bleu%d'%(i+1)] = bleu_score[i]
 
     cider_scorer = cider.Cider()
-    cider_score, _ = cider_scorer.compute_score(self.tst_reader.videoid2captions, vid2predicts)
+    cider_score, _ = cider_scorer.compute_score(self.tst_reader.vid2captions, vid2predicts)
     metrics['cider'] = cider_score
 
     return metrics
