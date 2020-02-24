@@ -5,6 +5,7 @@ import logging
 import os
 import datetime
 import pprint
+import  collections
 
 import numpy as np
 
@@ -95,6 +96,7 @@ class GanModelConfig(ModuleConfig):
     self.d_num_epoch = 5
     self.d_iter = -1 # -1 means not update
     self.d_val_acc = 0. # the target validation performance when training discriminator
+    self.d_buffer_size = 5
 
   def load(self, file):
     with open(file) as f:
@@ -356,7 +358,7 @@ class GanTrnTst(object):
 
   def _iterate_epoch(self, step, epoch):
     self.trn_reader.reset()
-    buffer = []
+    buffer = collections.deque()
     for data in self.trn_reader.yield_batch(self.model_cfg.trn_batch_size):
       # generator phase
       if self.model_cfg.g_freeze and epoch < self.model_cfg.g_freeze_epoch:
@@ -369,16 +371,15 @@ class GanTrnTst(object):
         self.g_optimizer.step()
 
       if self.model_cfg.d_iter != -1:
+        if len(buffer) == self.model_cfg.d_buffer_size:
+          buffer.popleft()
         buffer.append(data)
 
       step += 1
 
       # discriminator phase
       if self.model_cfg.d_iter > 0 and step % self.model_cfg.d_iter == 0:
-        # print self.model_cfg.d_num_epoch
         d_num_epoch = self.model_cfg.d_num_epoch
-        # if self.model_cfg.g_freeze  and epoch < self.model_cfg.g_freeze_epoch:
-        #   d_num_epoch = 1
         for _ in range(d_num_epoch):
           self.model.train()
           for data in buffer:
@@ -386,17 +387,14 @@ class GanTrnTst(object):
             loss = self.d_feed_data_forward_backward(data)
             self.d_optimizer.step()
 
-            # print loss.mean().item()
-
           self.model.eval()
           acc = self.d_validation(buffer)
           if acc >= self.model_cfg.d_val_acc:
             break
-        # print acc
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
 
-        buffer = []
+        # buffer = []
 
       if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
         model = self.model
