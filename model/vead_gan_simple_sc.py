@@ -45,6 +45,7 @@ def gen_cfg(**kwargs):
   cfg.d_base_lr = kwargs['d_lr']
   cfg.d_iter = kwargs['d_iter']
   cfg.d_val_acc = kwargs['d_val_acc']
+  cfg.d_buffer_size = kwargs['d_buffer_size']
 
   dec_cfg = cfg.subcfgs[DEC]
   dec_cfg.dim_embed = kwargs['dim_embed']

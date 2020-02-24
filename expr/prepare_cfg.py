@@ -432,12 +432,13 @@ def gen_vead_gan_simple_sc_cfg():
     'sim': 'add',
 
     'd_noise': .5,
-    'dim_kernel': 8,
-    'num_kernel': 64,
+    'dim_kernel': 64,
+    'num_kernel': 8,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
     'd_val_acc': .8,
+    'd_buffer_size': 15,
   }
 
   model_cfg = model.vead_gan_simple_sc.gen_cfg(**params)
