@@ -795,7 +795,7 @@ def gen_vead_gan_simple_cider_sc_cfg():
     'num_sample': 1,
     'g_num_epoch': 50,
     'g_lr': 1e-5,
-    'g_freeze': True,
+    'g_freeze': False,
     'g_freeze_epoch': 1,
 
     'dim_att_ft': 2048,
@@ -808,13 +808,14 @@ def gen_vead_gan_simple_cider_sc_cfg():
     'sim': 'add',
 
     'd_noise': .5,
-    'dim_kernel': 5,
-    'num_kernel': 50,
+    'dim_kernel': 64,
+    'num_kernel': 8,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
     'd_val_acc': .8,
     'reward_alpha': 5.,
+    'd_buffer_size': 15,
   }
 
   model_cfg = model.vead_gan_simple_cider_sc.gen_cfg(**params)
@@ -868,5 +869,5 @@ if __name__ == '__main__':
   # gen_gan_sc_cfg()
   # gen_gan_cider_sc_cfg()
 
-  gen_vead_gan_simple_sc_cfg()
-  # gen_vead_gan_simple_cider_sc_cfg()
+  # gen_vead_gan_simple_sc_cfg()
+  gen_vead_gan_simple_cider_sc_cfg()
