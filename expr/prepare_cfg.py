@@ -432,8 +432,8 @@ def gen_vead_gan_simple_sc_cfg():
     'sim': 'add',
 
     'd_noise': .5,
-    'dim_kernel': 50,
-    'num_kernel': 5,
+    'dim_kernel': 8,
+    'num_kernel': 64,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
