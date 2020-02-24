@@ -12,12 +12,10 @@ from bleu import bleu
 from cider import cider
 
 from base import framework
-import encoder.pca
-import decoder.rnn_rl
+import decoder.att_rnn_rl
 import d.simple
 import model.util
 
-ENC = 'encoder'
 DEC = 'decoder'
 DIS = 'discriminator'
 
@@ -25,8 +23,7 @@ class ModelConfig(framework.GanModelConfig):
   def __init__(self):
     super(ModelConfig, self).__init__()
 
-    self.subcfgs[ENC] = encoder.pca.Config()
-    self.subcfgs[DEC] = decoder.rnn_rl.Config()
+    self.subcfgs[DEC] = decoder.att_rnn_rl.Config()
     self.subcfgs[DIS] = d.simple.Config()
 
     self.strategy = 'beam'
@@ -49,21 +46,22 @@ def gen_cfg(**kwargs):
   cfg.d_iter = kwargs['d_iter']
   cfg.d_val_acc = kwargs['d_val_acc']
 
-  enc_cfg = cfg.subcfgs[ENC]
-  enc_cfg.dim_ft = kwargs['dim_ft']
-  enc_cfg.dim_output = kwargs['dim_hidden']
-
   dec_cfg = cfg.subcfgs[DEC]
-  dec_cfg.cell = kwargs['cell']
   dec_cfg.dim_embed = kwargs['dim_embed']
-  dec_cfg.dim_hidden = kwargs['dim_hidden']
-  dec_cfg.dropin = kwargs['g_dropin']
-  dec_cfg.dropout = kwargs['g_dropout']
+  dec_cfg.dim_att_ft = kwargs['dim_att_ft']
+  dec_cfg.dropin = kwargs['dropin']
+  dec_cfg.dropout = kwargs['dropout']
   dec_cfg.max_step = kwargs['max_step']
-  dec_cfg.tied = kwargs['tied']
   dec_cfg.beam_width = kwargs['beam_width']
-  dec_cfg.init_fg = kwargs['init_fg']
-  dec_cfg.num_sample = kwargs['num_sample']
+  dec_cfg.tied_key_val = kwargs['tied_key_val']
+  dec_cfg.val_proj = kwargs['val_proj']
+
+  cell_cfg = dec_cfg.subcfgs[decoder.att_rnn.CELL]
+  cell_cfg.dim_embed = kwargs['dim_embed']
+  cell_cfg.dim_hidden = kwargs['dim_hidden']
+  cell_cfg.dim_key = kwargs['dim_key']
+  cell_cfg.dim_val = kwargs['dim_val']
+  cell_cfg.num_att_ft = kwargs['num_att_ft']
 
   dis_cfg = cfg.subcfgs[DIS]
   dis_cfg.dim_kernel = kwargs['dim_kernel']
@@ -85,12 +83,10 @@ class Model(nn.Module):
     super(Model, self).__init__()
 
     self._config = config
-    enc_cfg = self._config.subcfgs[ENC]
     dec_cfg = self._config.subcfgs[DEC]
     dis_cfg = self._config.subcfgs[DIS]
 
-    self.encoder = encoder.pca.Encoder(enc_cfg)
-    self.decoder = decoder.rnn_rl.Decoder(dec_cfg)
+    self.decoder = decoder.att_rnn_rl.Decoder(dec_cfg)
     self.discriminator = d.simple.Discriminator(dis_cfg)
 
     self.op2monitor = {}
@@ -118,14 +114,15 @@ class Model(nn.Module):
       loss, dist2img = self.discriminator('trn', fts, sents, lens, y=y)
       return loss
     elif mode == 'g_sample':
-      fts = kwargs['fts']
-      embed = self.encoder(fts)
-      if self._config.subcfgs[DEC].cell == 'lstm':
-        init_state = (embed, embed)
-      elif self._config.subcfgs[DEC].cell == 'gru':
-        init_state = embed
+      att_fts = kwargs['att_fts']
+      att_masks = kwargs['att_masks']
 
-      return self.decoder('sample', init_state)
+      cell_config = self._config.subcfgs[DEC].subcfgs[decoder.att_rnn_rl.CELL]
+      b = att_fts.size(0)
+      init_state = torch.zeros(b, cell_config.dim_hidden).cuda()
+      init_state = (init_state, init_state)
+
+      return self.decoder('sample', init_state, att_fts, att_masks)
     elif mode == 'd_eval':
       fts = kwargs['fts']
       sents = kwargs['sents']
@@ -139,23 +136,25 @@ class Model(nn.Module):
       
       return self.discriminator('val', fts, sents, lens)
     elif mode == 'g_val':
-      ft = kwargs['fts']
-      embed = self.encoder(ft)
-      if self._config.subcfgs[DEC].cell == 'lstm':
-        init_state = (embed, embed)
-      elif self._config.subcfgs[DEC].cell == 'gru':
-        init_state = embed
+      att_fts = kwargs['att_fts']
+      att_masks = kwargs['att_masks']
 
-      return self.decoder('val', init_state)
+      cell_config = self._config.subcfgs[DEC].subcfgs[decoder.att_rnn_rl.CELL]
+      b = att_fts.size(0)
+      init_state = torch.zeros(b, cell_config.dim_hidden).cuda()
+      init_state = (init_state, init_state)
+
+      return self.decoder('val', init_state, att_fts, att_masks)
     elif mode == 'g_tst':
-      ft = kwargs['fts']
-      embed = self.encoder(ft)
-      if self._config.subcfgs[DEC].cell == 'lstm':
-        init_state = (embed, embed)
-      elif self._config.subcfgs[DEC].cell == 'gru':
-        init_state = embed
+      att_fts = kwargs['att_fts']
+      att_masks = kwargs['att_masks']
 
-      return self.decoder('tst', init_state, strategy=kwargs['strategy'])
+      cell_config = self._config.subcfgs[DEC].subcfgs[decoder.att_rnn_rl.CELL]
+      b = att_fts.size(0)
+      init_state = torch.zeros(b, cell_config.dim_hidden).cuda()
+      init_state = (init_state, init_state)
+
+      return self.decoder('tst', init_state, att_fts, att_masks, strategy=kwargs['strategy'])
 
   def g_trainable_params(self):
     params = []
@@ -174,7 +173,7 @@ class Model(nn.Module):
     return params
 
 
-PathCfg = model.util.PathCfg
+PathCfg = model.util.AttPathCfg
 
 
 class TrnTst(framework.GanTrnTst):
@@ -185,12 +184,12 @@ class TrnTst(framework.GanTrnTst):
 
   def g_feed_data_forward_backward(self, data):
     # 1. sample from g
-    fts = torch.Tensor(data['fts']).cuda()
-    sample_out_wids, log_probs, greedy_out_wids = self.model('g_sample', fts=fts)
-  
+    att_fts = torch.Tensor(data['att_fts']).cuda()
+    att_masks = torch.ones(att_fts.size()[:-1]).cuda()
+    sample_out_wids, log_probs, greedy_out_wids = self.model('g_sample', att_fts=att_fts, att_masks=att_masks)
+
     # 2. eval d to get reward
     EOS = 1
-  
     b, num_sample, _ = sample_out_wids.size()
     sample_out_wids = sample_out_wids.view(b*num_sample, -1)
     lens = []
@@ -202,9 +201,10 @@ class TrnTst(framework.GanTrnTst):
       else:
         lens.append(k+1)
     lens = torch.LongTensor(lens).cuda()
-    b, f = fts.size()
+
+    fts = torch.Tensor(data['fts']).cuda()
+    b, f = ts.size()
     expand_fts = fts.unsqueeze(1).expand(b, num_sample, f).view(b*num_sample, f)
-    # print sample_out_wids.size()
     log_p_sample = self.model('d_eval', fts=expand_fts, sents=sample_out_wids.transpose(0, 1), lens=lens)
     log_p_sample = log_p_sample.view(b, num_sample)
 
@@ -239,9 +239,10 @@ class TrnTst(framework.GanTrnTst):
     loss.backward()
 
   def g_feed_data_forward(self, data):
-    fts = torch.Tensor(data['fts']).cuda()
-    sample_out_wids, log_probs, greedy_out_wids = self.model('g_sample', fts=fts)
-  
+    att_fts = torch.Tensor(data['att_fts']).cuda()
+    att_masks = torch.ones(att_fts.size()[:-1]).cuda()
+    sample_out_wids, log_probs, greedy_out_wids = self.model('g_sample', att_fts=att_fts, att_masks=att_masks)
+
     EOS = 1
     b, num_sample, _ = sample_out_wids.size()
     sample_out_wids = sample_out_wids.view(b*num_sample, -1)
@@ -311,10 +312,11 @@ class TrnTst(framework.GanTrnTst):
   def g_validation(self):
     vid2predicts = {}
     for data in self.tst_reader.yield_batch(self.model_cfg.tst_batch_size):
-      fts = torch.Tensor(data['fts']).cuda(0)
+      att_fts = torch.Tensor(data['att_fts']).cuda()
+      att_masks = torch.ones(att_fts.size()[:-1]).cuda()
 
       with torch.no_grad():
-        out_wids = self.model('g_val', fts=fts)
+        out_wids = self.model('g_val', att_fts=att_fts, att_masks=att_masks)
 
       out_wids = out_wids.data.cpu().numpy()
       for i, sent in enumerate(out_wids):
@@ -324,12 +326,12 @@ class TrnTst(framework.GanTrnTst):
     metrics = {}
 
     bleu_scorer = bleu.Bleu(4)
-    bleu_score, _ = bleu_scorer.compute_score(self.tst_reader.vid2captions, vid2predicts)
+    bleu_score, _ = bleu_scorer.compute_score(self.tst_reader.videoid2captions, vid2predicts)
     for i in range(4):
       metrics['bleu%d'%(i+1)] = bleu_score[i]
 
     cider_scorer = cider.Cider()
-    cider_score, _ = cider_scorer.compute_score(self.tst_reader.vid2captions, vid2predicts)
+    cider_score, _ = cider_scorer.compute_score(self.tst_reader.videoid2captions, vid2predicts)
     metrics['cider'] = cider_score
 
     return metrics
@@ -337,63 +339,25 @@ class TrnTst(framework.GanTrnTst):
   def g_predict_in_tst(self):
     vid2predict = {}
     for data in self.tst_reader.yield_batch(self.model_cfg.tst_batch_size):
-      fts = torch.Tensor(data['fts']).cuda(0)
+      att_fts = torch.Tensor(data['att_fts']).cuda()
+      att_masks = torch.ones(att_fts.size()[:-1]).cuda()
 
       if self.model_cfg.strategy == 'beam':
         with torch.no_grad():
           beam_cum_log_probs, beam_pres, beam_ends, out_wids = self.model(
-            'g_tst', fts=fts, strategy='beam')
+            'g_tst', att_fts=att_fts, att_masks=att_masks, strategy='beam')
         beam_cum_log_probs = beam_cum_log_probs.data.cpu().numpy()
         beam_pres = beam_pres.data.cpu().numpy()
         beam_ends = beam_ends.data.cpu().numpy()
         out_wids = out_wids.data.cpu().numpy()
 
-        candidates = model.util.beamsearch_recover_captions(out_wids, beam_cum_log_probs, beam_pres, beam_ends)
+        candidates = util.beamsearch_recover_captions(out_wids, beam_cum_log_probs, beam_pres, beam_ends)
 
-      for i, candidate in enumerate(candidates):
-        vid = data['vids'][i]
-        sent = np.array(candidate, dtype=np.int)
-        predict = self.int2str(np.expand_dims(sent, 0))[0]
-        vid2predict[str(vid)] = predict
-      base += self.model_cfg.tst_batch_size
+        for i, candidate in enumerate(candidates):
+          vid = data['vids'][i]
+          sent = np.array(candidate, dtype=np.int)
+          predict = self.int2str(np.expand_dims(sent, 0))[0]
+          vid2predict[str(vid)] = predict
 
     with open(self.path_cfg.predict_file, 'w') as fout:
       json.dump(vid2predict, fout)
-
-  def d_predict_in_tst(self):
-    pass
-
-
-class TrnTstDecode(TrnTst):
-  def g_predict_in_tst(self):
-    vid2predict = {}
-    for data in self.tst_reader.yield_batch(self.model_cfg.tst_batch_size):
-      fts = torch.Tensor(data['fts']).cuda()
-
-      with torch.no_grad():
-        beam_cum_log_probs, beam_pres, beam_ends, out_wids = self.model(
-          'g_tst', fts=fts, strategy='beam')
-      beam_cum_log_probs = beam_cum_log_probs.data.cpu().numpy()
-      beam_pres = beam_pres.data.cpu().numpy()
-      beam_ends = beam_ends.data.cpu().numpy()
-      out_wids = out_wids.data.cpu().numpy()
-
-      candidate_scores = model.util.beamsearch_recover_multiple_captions(
-        out_wids, beam_cum_log_probs, beam_pres, beam_ends, self.model_cfg.pool_size)
-      
-      for i, candidate_score in enumerate(candidate_scores):
-        vid = data['vids'][i]
-        out = []
-        for d in candidate_score:
-          sent = np.array(d['sent'])
-          predict = self.int2str(np.expand_dims(sent, 0))[0]
-          score = float(d['score'])
-          out.append({
-            'sent': predict,
-            'score': score,
-          }) 
-        vid2predict[vid] = out
-
-    with open(self.path_cfg.predict_file, 'w') as fout:
-      json.dump(vid2predict, fout, indent=2)
-    

@@ -89,6 +89,30 @@ class TstReader(framework.Reader):
       }
 
 
+class AttTstReader(framework.Reader):
+  def __init__(self, ft_file, att_ft_file, videoid_file):
+    self.fts = np.empty(0)
+    self.att_fts = np.empty(0)
+    self.videoids = []
+
+    self.fts = np.load(ft_file)
+    self.num_ft = self.fts.shape[0]
+    self.att_fts = np.load(att_ft_file)
+
+    self.videoids = np.load(videoid_file)
+
+  def yield_batch(self, batch_size):
+    for i in range(0, self.num_ft, batch_size):
+      start = i
+      end = i + batch_size
+
+      yield {
+        'fts': self.fts[start:end],
+        'att_fts': self.att_fts[start:end],
+        'vids': self.videoids[start:end],
+      }
+
+
 class TrnDiscriminatorReader(framework.Reader):
   def __init__(self, ft_file, annotation_file):
     self.fts = np.empty(0)
@@ -284,6 +308,79 @@ class TrnGanReader(framework.Reader):
       }
 
 
+class AttTrnGanReader(framework.Reader):
+  def __init__(self, ft_file, att_ft_file, videoid_file, annotation_file):
+    self.fts = np.empty(0)
+    self.att_fts = np.empty(0)
+    self.vids = []
+    self.ft_idxs = []
+    self.captionids = []
+    self.ft_idx2captionids = {}
+
+    self.num_ft = 0
+    self.num_caption = 0
+    self.shuffled_ft_idxs = []
+
+    self.fts = np.load(ft_file)
+    self.num_ft = self.fts.shape[0]
+    self.att_fts = np.load(att_ft_file)
+
+    self.vids = np.load(videoid_file)
+
+    with open(annotation_file, 'rb') as f:
+      self.ft_idxs, self.captionids = pickle.load(f)
+    self.num_caption = len(self.ft_idxs)
+    for ft_idx, captionid in zip(self.ft_idxs, self.captionids):
+      if ft_idx not in self.ft_idx2captionids:
+        self.ft_idx2captionids[ft_idx] = []
+      self.ft_idx2captionids[ft_idx].append(captionid[1:-1]) # remove BOS and EOS
+
+    self.shuffled_ft_idxs = self.ft_idx2captionids.keys()
+
+  def reset(self):
+    random.shuffle(self.shuffled_ft_idxs)
+
+  def yield_batch(self, batch_size):
+    for i in range(0, self.num_ft, batch_size):
+      start = i
+      end = i + batch_size
+      ft_idxs = self.shuffled_ft_idxs[start:end]
+
+      clean_ft_idxs = []
+      pos_captionids = []
+      neg_captionids = []
+      for ft_idx in ft_idxs:
+        captionids = self.ft_idx2captionids[ft_idx]
+        num = len(captionids)
+        if num < 5:
+          continue
+        pos_captionids += captionids[:5]
+
+        cnt = 0
+        while True and cnt < 5:
+          r = random.randint(0, self.num_caption-1)
+          if self.ft_idxs[r] != ft_idx:
+            neg_captionids.append(self.captionids[r][1:-1])
+            cnt += 1
+
+        clean_ft_idxs.append(ft_idx)
+      pos_lens = [len(d) for d in pos_captionids] # b*5
+      neg_lens = [len(d) for d in neg_captionids] # b*5
+      fts = self.fts[clean_ft_idxs] # b
+      att_fts = self.att_fts[clean_ft_idxs]
+      vids = self.vids[clean_ft_idxs]
+
+      yield {
+        'vids': vids,
+        'fts': fts,
+        'att_fts': att_fts,
+        'pos_captionids': pos_captionids,
+        'pos_lens': pos_lens,
+        'neg_captionids': neg_captionids, 
+        'neg_lens': neg_lens,
+      }
+
+
 class ValGanReader(framework.Reader):
   def __init__(self, ft_file, videoid_file, captionstr_file):
     self.fts = np.empty(0)
@@ -309,6 +406,38 @@ class ValGanReader(framework.Reader):
       
       yield {
         'fts': self.fts[start:end],
+        'vids': self.vids[start:end],
+      }
+
+
+class AttValGanReader(framework.Reader):
+  def __init__(self, ft_file, att_ft_file, videoid_file, captionstr_file):
+    self.fts = np.empty(0)
+    self.att_fts = np.empty(0)
+    self.vids = []
+    self.vid2captions = {}
+
+    self.num_ft = 0
+
+    self.fts = np.load(ft_file)
+    self.num_ft = self.fts.shape[0]
+    self.att_fts = np.load(att_ft_file)
+
+    self.vids = np.load(videoid_file)
+
+    with open(captionstr_file) as f:
+      vid2captions = pickle.load(f)
+    for vid in self.vids:
+      self.vid2captions[vid] = vid2captions[vid]
+
+  def yield_batch(self, batch_size):
+    for i in range(0, self.num_ft, batch_size):
+      start = i
+      end = i + batch_size
+      
+      yield {
+        'fts': self.fts[start:end],
+        'att_fts': self.att_fts[start:end],
         'vids': self.vids[start:end],
       }
 
@@ -363,6 +492,67 @@ class TrnSimpleGanReader(framework.Reader):
       yield {
         'vids': vids,
         'fts': fts,
+        'pos_captionids': pos_captionids,
+        'pos_lens': pos_lens,
+        'neg_captionids': neg_captionids,
+        'neg_lens': neg_lens,
+      }
+
+
+class AttTrnSimpleGanReader(framework.Reader):
+  def __init__(self, ft_file, att_ft_file, videoid_file, annotation_file):
+    self.fts = np.empty(0)
+    self.att_fts = np.empty(0)
+    self.vids = []
+    self.ft_idxs = []
+    self.captionids = []
+
+    self.num_caption = 0
+    self.shuffled_idxs = []
+
+    self.fts = np.load(ft_file)
+    self.att_fts = np.load(att_ft_file)
+
+    self.vids = np.load(videoid_file)
+    
+    with open(annotation_file, 'rb') as f:
+      self.ft_idxs, self.captionids = pickle.load(f)
+    self.num_caption = len(self.ft_idxs)
+
+    self.shuffled_idxs = range(self.num_caption)
+
+  def reset(self):
+    random.shuffle(self.shuffled_idxs)
+
+  def yield_batch(self, batch_size):
+    for i in range(0, self.num_caption, batch_size):
+      start = i
+      end = i + batch_size
+      idxs = self.shuffled_idxs[start:end]
+
+      pos_captionids = []
+      neg_captionids = []
+      for idx in idxs:
+        ft_idx = self.ft_idxs[idx]
+        pos_captionids.append(self.captionids[idx][1:-1]) # exclude BOS and EOS
+
+        cnt = 0
+        while True and cnt < 1:
+          r = random.randint(0, self.num_caption-1)
+          if self.ft_idxs[r] != ft_idx:
+            neg_captionids.append(self.captionids[r][1:-1]) # exclude BOS and EOS
+            cnt += 1
+      pos_lens = [len(d) for d in pos_captionids]
+      neg_lens = [len(d) for d in neg_captionids]
+      ft_idxs = [self.ft_idxs[d] for d in idxs]
+      fts = self.fts[ft_idxs]
+      att_fts = self.att_fts[ft_idxs]
+      vids = self.vids[ft_idxs]
+
+      yield {
+        'vids': vids,
+        'fts': fts,
+        'att_fts': att_fts,
         'pos_captionids': pos_captionids,
         'pos_lens': pos_lens,
         'neg_captionids': neg_captionids,

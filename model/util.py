@@ -208,6 +208,31 @@ class RLPathCfg(framework.PathCfg):
     self.tst_videoid_file = ''
 
 
+class AttPathCfg(framework.PathCfg):
+  def __init__(self):
+    super(AttPathCfg, self).__init__()
+
+    # manually provided in the cfg file
+    self.annotation_dir = ''
+    self.output_dir = ''
+    self.trn_ftfile = ''
+    self.val_ftfile = ''
+    self.tst_ftfile = ''
+    self.trn_att_ftfile = ''
+    self.val_att_ftfile = ''
+    self.tst_att_ftfile = ''
+
+    self.trn_annotation_file = ''
+    self.val_annotation_file = ''
+    self.word_file = ''
+    self.groundtruth_file = ''
+
+    # automatically generated paths
+    self.trn_videoid_file = ''
+    self.val_videoid_file = ''
+    self.tst_videoid_file = ''
+
+
 def transform_predict_captionid_array_to_list(captionids): # (None, step)
   outs = []
   for captionid in captionids:
