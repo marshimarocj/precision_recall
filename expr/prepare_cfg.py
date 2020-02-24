@@ -813,7 +813,7 @@ def gen_vead_gan_simple_cider_sc_cfg():
     'd_lr': 1e-3,
     'd_iter': 5,
     'd_val_acc': .8,
-    'reward_alpha',
+    'reward_alpha': 5.,
   }
 
   model_cfg = model.vead_gan_simple_cider_sc.gen_cfg(**params)
