@@ -211,7 +211,7 @@ class TrnTst(framework.GanTrnTst):
     lens = torch.LongTensor(lens).cuda()
 
     fts = torch.Tensor(data['fts']).cuda()
-    b, f = ts.size()
+    b, f = fts.size()
     expand_fts = fts.unsqueeze(1).expand(b, num_sample, f).view(b*num_sample, f)
     log_p_sample = self.model('d_eval', fts=expand_fts, sents=sample_out_wids.transpose(0, 1), lens=lens)
     log_p_sample = log_p_sample.view(b, num_sample)
