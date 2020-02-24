@@ -51,7 +51,8 @@ if __name__ == '__main__':
 
   if opts.is_train:
     trntst = model.vead_gan_simple_sc.TrnTst(model_cfg, path_cfg, [0])
-    trn_reader = model.data.AttTrnSimpleGanReader(path_cfg.trn_ftfile, path_cfg.trn_att_ftfile, path_cfg.trn_videoid_file, path_cfg.trn_annotation_file)
+    # trn_reader = model.data.AttTrnSimpleGanReader(path_cfg.trn_ftfile, path_cfg.trn_att_ftfile, path_cfg.trn_videoid_file, path_cfg.trn_annotation_file)
+    trn_reader = model.data.AttTrnSimpleGanReader(path_cfg.val_ftfile, path_cfg.val_att_ftfile, path_cfg.val_videoid_file, path_cfg.val_annotation_file)
     tst_reader = model.data.AttValGanReader(path_cfg.val_ftfile, path_cfg.val_att_ftfile, path_cfg.val_videoid_file, path_cfg.groundtruth_file)
     trntst.train(m, trn_reader, tst_reader)
   else:
