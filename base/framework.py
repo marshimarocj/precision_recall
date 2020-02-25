@@ -401,11 +401,12 @@ class GanTrnTst(object):
             loss = self.d_feed_data_forward_backward(data)
             self.d_optimizer.step()
         else:
-          if epoch >= 1: # end training, reach equilibrium
-            self.model.eval()
-            acc = self.d_validation(buffer)
-            if acc < self.model_cfg.d_exit_acc:
-              break
+          pass
+          # if epoch >= 1: # end training, reach equilibrium
+          #   self.model.eval()
+          #   acc = self.d_validation(buffer)
+          #   if acc < self.model_cfg.d_exit_acc:
+          #     break
 
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
