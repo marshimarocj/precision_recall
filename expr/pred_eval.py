@@ -75,7 +75,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
   }
   for i in range(num):
     if (i+1) % 10 == 0:
-      print i+1
+      print(i+1)
     bleu_scorer = Bleu(4)
     meteor_scorer = Meteor()
     rouge_scorer = Rouge()
