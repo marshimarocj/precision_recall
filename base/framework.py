@@ -405,7 +405,9 @@ class GanTrnTst(object):
 
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
-        
+
+        self.model.eval()
+        acc = self.d_validation(buffer)
         if acc < self.model_cfg.d_exit_acc and epoch < 1: # end training, reach equilibrium
           break
 
