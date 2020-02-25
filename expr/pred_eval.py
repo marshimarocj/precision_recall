@@ -545,7 +545,7 @@ def eval_precision_recall():
       json.dump(recalls, fout)
 
 
-def eval_spice():
+def eval_precision():
   # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
   root_dir = '/hdd/mscoco' # aws
@@ -620,5 +620,5 @@ if __name__ == '__main__':
   # predict_decode()
   # gather_predict_score()
   # eval_precision_recall()
-  eval_spice()
+  eval_precision()
   # predict_eval_discriminator()
