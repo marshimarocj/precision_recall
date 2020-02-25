@@ -566,10 +566,10 @@ def eval_precision():
   # epoch = 40
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0')
   # epoch = 16
-  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8')
-  # epoch = 4
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
-  epoch = 21
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8')
+  epoch = 4
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
+  # epoch = 21
 
   pred_files = [
     os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
