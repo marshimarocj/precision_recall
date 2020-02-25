@@ -5,7 +5,8 @@ import logging
 import os
 import datetime
 import pprint
-import  collections
+import collections
+import random
 
 import numpy as np
 
@@ -381,7 +382,10 @@ class GanTrnTst(object):
       if self.model_cfg.d_iter > 0 and step % self.model_cfg.d_iter == 0:
         d_num_epoch = self.model_cfg.d_num_epoch
         for _ in range(d_num_epoch):
-          for data in buffer[::-1]:
+          idxs = range(len(buffer))
+          random.shuffle(idxs)
+          for idx in idxs:
+            data = buffer[idx]
             self.model.eval()
             acc = self.d_validation([data])
             if acc >= self.model_cfg.d_val_acc:
