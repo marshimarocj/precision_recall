@@ -86,7 +86,7 @@ def gen_simple_discriminator_cfg():
   # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
-  root_dir = '/mnt/data1/jiac/mscoco' # aws
+  root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'simple_discriminator')
