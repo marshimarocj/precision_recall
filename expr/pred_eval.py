@@ -125,7 +125,7 @@ def eval_spice(vid2sent_scores, vid2gt, num):
   }
   for i in range(num):
     if (i+1) % 10 == 0:
-      print i+1
+      print(i+1)
     spice = Spice()
 
     predicts = {}
@@ -324,7 +324,7 @@ def predict_eval():
   gpuid = 1
 
   best_epochs = auto_select(logdir, lower=1)
-  print best_epochs
+  print(best_epochs)
 
   with open('eval.%d.txt'%gpuid, 'w') as fout:
     predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
@@ -339,8 +339,8 @@ def predict_eval():
       content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
         out['bleu'][0]*100, out['bleu'][1]*100, out['bleu'][2]*100, out['bleu'][3]*100,
         out['meteor']*100, out['rouge']*100, out['cider']*100)
-      print best_epoch
-      print content
+      print(best_epoch)
+      print(content)
       fout.write(str(best_epoch) + '\t' + content + '\n')
 
 
@@ -530,7 +530,7 @@ def eval_precision_recall():
     for vid in vid2sent_scores:
       num+= len(vid2sent_scores[vid])
     num /= len(vid2sent_scores)
-    print num
+    print(num)
 
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
@@ -586,7 +586,7 @@ def eval_precision():
     for vid in vid2sent_scores:
       num+= len(vid2sent_scores[vid])
     num /= len(vid2sent_scores)
-    print num
+    print(num)
 
     with open(gt_file) as f:
       vid2gt = cPickle.load(f)
@@ -610,7 +610,7 @@ def predict_eval_discriminator():
   gpuid = 0
 
   best_epoch = auto_select_discriminator(logdir)
-  print best_epoch
+  print(best_epoch)
 
   predict(python_file, model_cfg_file, path_cfg_file, [best_epoch], gpuid)
 
