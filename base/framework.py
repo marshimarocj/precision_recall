@@ -97,6 +97,7 @@ class GanModelConfig(ModuleConfig):
     self.d_num_epoch = 5
     self.d_iter = -1 # -1 means not update
     self.d_val_acc = 0. # the target validation performance when training discriminator
+    self.d_exit_acc = .65
     self.d_buffer_size = 5
 
   def load(self, file):
@@ -336,7 +337,7 @@ class GanTrnTst(object):
     for epoch in range(base_epoch, self.model_cfg.g_num_epoch):
       history = self.change_lr(history, metrics)
 
-      step = self._iterate_epoch(step, epoch)
+      step, acc = self._iterate_epoch(step, epoch)
 
       self.model.eval()
       metrics = self.g_validation()
@@ -347,6 +348,9 @@ class GanTrnTst(object):
       val_file = os.path.join(self.path_cfg.log_dir, 'val_metrics.%d.json'%epoch)
       with open(val_file, 'w') as fout:
         json.dump(metrics, fout, indent=2)
+      
+      if acc < self.model_cfg.d_exit_acc:
+        break
 
   def test(self, m, tst_reader):
     self.model = m
@@ -360,6 +364,7 @@ class GanTrnTst(object):
   def _iterate_epoch(self, step, epoch):
     self.trn_reader.reset()
     buffer = collections.deque()
+    acc = 0.
     for data in self.trn_reader.yield_batch(self.model_cfg.trn_batch_size):
       # generator phase
       if self.model_cfg.g_freeze and epoch < self.model_cfg.g_freeze_epoch:
@@ -400,6 +405,9 @@ class GanTrnTst(object):
 
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
+        
+        if acc < self.model_cfg.d_exit_acc: # end training, reach equilibrium
+          break
 
         # buffer = []
 
@@ -424,7 +432,7 @@ class GanTrnTst(object):
     model_file = os.path.join(self.path_cfg.model_dir, 'epoch-%d.pth'%epoch)
     save_gan_checkpoint(self.model, self.g_optimizer, self.d_optimizer, epoch, model_file)
 
-    return step
+    return step, acc
 
   def _load_and_place_device(self):
     if self.path_cfg.model_file != '':
