@@ -386,9 +386,9 @@ class GanTrnTst(object):
       # discriminator phase
       if self.model_cfg.d_iter > 0 and step % self.model_cfg.d_iter == 0:
         d_num_epoch = self.model_cfg.d_num_epoch
+        idxs = range(len(buffer))
+        random.shuffle(idxs)
         for _ in range(d_num_epoch):
-          idxs = range(len(buffer))
-          random.shuffle(idxs)
           for idx in idxs:
             data = buffer[idx]
             self.model.eval()
@@ -400,17 +400,15 @@ class GanTrnTst(object):
             self.d_optimizer.zero_grad()
             loss = self.d_feed_data_forward_backward(data)
             self.d_optimizer.step()
-          if acc >= self.model_cfg.d_val_acc:
-            break
-        print acc, self.model_cfg.d_exit_acc
+        else:
+          if epoch >= 1: # end training, reach equilibrium
+            self.model.eval()
+            acc = self.d_validation(buffer)
+            if acc < self.model_cfg.d_exit_acc:
+              break
 
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
-
-        self.model.eval()
-        acc = self.d_validation(buffer)
-        if acc < self.model_cfg.d_exit_acc and epoch < 1: # end training, reach equilibrium
-          break
 
         # buffer = []
 
