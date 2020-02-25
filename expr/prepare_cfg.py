@@ -83,9 +83,10 @@ def gen_discriminator_cfg():
 
 
 def gen_simple_discriminator_cfg():
-  root_dir = '/data1/jiac/mscoco' # mercurial
+  # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
+  root_dir = '/mnt/data1/jiac/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'simple_discriminator')
@@ -98,7 +99,7 @@ def gen_simple_discriminator_cfg():
   params = {
     'num_epoch': 21,
     'lr': 1e-3,
-    'dim_kernel': 8,
+    'dim_kernel': 64,
     'num_kernel': 64,
     'discriminator_noise': .5,
     'dim_ft': 2048,
@@ -857,7 +858,7 @@ def gen_vead_gan_simple_cider_sc_cfg():
 
 if __name__ == '__main__':
   # gen_discriminator_cfg()
-  # gen_simple_discriminator_cfg()
+  gen_simple_discriminator_cfg()
   # gen_margin_discriminator_cfg()
   # gen_vevd_ml_cfg()
   # gen_vevd_sc_cfg()
@@ -870,4 +871,4 @@ if __name__ == '__main__':
   # gen_gan_cider_sc_cfg()
 
   # gen_vead_gan_simple_sc_cfg()
-  gen_vead_gan_simple_cider_sc_cfg()
+  # gen_vead_gan_simple_cider_sc_cfg()
