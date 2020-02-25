@@ -381,16 +381,19 @@ class GanTrnTst(object):
       if self.model_cfg.d_iter > 0 and step % self.model_cfg.d_iter == 0:
         d_num_epoch = self.model_cfg.d_num_epoch
         for _ in range(d_num_epoch):
-          self.model.train()
           for data in buffer:
+            self.model.eval()
+            acc = self.d_validation([data])
+            if acc >= self.model_cfg.d_val_acc:
+              break
+
+            self.model.train()
             self.d_optimizer.zero_grad()
             loss = self.d_feed_data_forward_backward(data)
             self.d_optimizer.step()
-
-          self.model.eval()
-          acc = self.d_validation(buffer)
           if acc >= self.model_cfg.d_val_acc:
             break
+
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
 
