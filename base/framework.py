@@ -363,7 +363,8 @@ class GanTrnTst(object):
 
   def _iterate_epoch(self, step, epoch):
     self.trn_reader.reset()
-    buffer = collections.deque()
+    # buffer = collections.deque()
+    buffer = []
     acc = 0.
     for data in self.trn_reader.yield_batch(self.model_cfg.trn_batch_size):
       # generator phase
@@ -377,8 +378,9 @@ class GanTrnTst(object):
         self.g_optimizer.step()
 
       if self.model_cfg.d_iter != -1:
-        if len(buffer) == self.model_cfg.d_buffer_size:
-          buffer.popleft()
+        # if len(buffer) == self.model_cfg.d_buffer_size:
+        #   buffer.popleft()
+        # buffer.append(data)
         buffer.append(data)
 
       step += 1
@@ -411,7 +413,7 @@ class GanTrnTst(object):
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
 
-        # buffer = []
+        buffer = []
 
       if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
         model = self.model
