@@ -135,8 +135,8 @@ def prepare_for_vead_gan_simple():
   # expr_name = os.path.join(root_dir, 'vead_gan_simple_sc_expr', 'bottomup.512.512.512.512.2048.add.50.5.5.0.80')
   # discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.8.64.512.lstm', 'model', 'epoch-20.pth')
   # expr_name = os.path.join(root_dir, 'vead_gan_simple_sc_expr', 'bottomup.512.512.512.512.2048.add.8.64.5.0.80')
-  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.64.8.512.lstm', 'model', 'epoch-20.pth')
-  expr_name = os.path.join(root_dir, 'vead_gan_simple_sc_expr', 'bottomup.512.512.512.512.2048.add.64.8.5.0.80')
+  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'tf_resnet152_450.64.64.512.lstm', 'model', 'epoch-20.pth')
+  expr_name = os.path.join(root_dir, 'vead_gan_simple_sc_expr', 'bottomup.512.512.512.512.2048.add.64.64.5.0.80')
 
   model_cfg_file = expr_name + '.model.json'
   path_cfg_file = expr_name + '.path.json'
