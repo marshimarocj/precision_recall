@@ -1,6 +1,6 @@
 import os
 import json
-import cPickle
+import pickle
 import subprocess
 import sys
 import md5
@@ -18,7 +18,7 @@ from meteor.meteor import Meteor
 '''func
 '''
 def get_res_gts_dict(res_file, gts_file):
-  human_caption = cPickle.load(file(gts_file))
+  human_caption = pickle.load(file(gts_file))
   data = json.load(file(res_file))
 
   res, gts = {}, {}
@@ -533,7 +533,7 @@ def eval_precision_recall():
     print(num)
 
     with open(gt_file) as f:
-      vid2gt = cPickle.load(f)
+      vid2gt = pickle.load(f)
 
     # precisions = eval_precision(vid2sent_scores, vid2gt, num)
     # with open(out_precision_file, 'w') as fout:
@@ -589,7 +589,7 @@ def eval_precision():
     print(num)
 
     with open(gt_file) as f:
-      vid2gt = cPickle.load(f)
+      vid2gt = pickle.load(f)
 
     precisions = eval_spice(vid2sent_scores, vid2gt, num)
     with open(out_precision_file, 'w') as fout:
