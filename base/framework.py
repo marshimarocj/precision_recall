@@ -402,6 +402,7 @@ class GanTrnTst(object):
             self.d_optimizer.step()
           if acc >= self.model_cfg.d_val_acc:
             break
+        print acc, self.model_cfg.d_exit_acc
 
         if self.model_cfg.monitor_iter > 0 and step % self.model_cfg.monitor_iter == 0:
           self.logger.info('(step %d) discrimintor acc: %f', step, acc)
