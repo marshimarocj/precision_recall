@@ -18,7 +18,7 @@ import d.full_sc
 import model.util
 
 DEC = 'decoder'
-DIS = 'discriminator
+DIS = 'discriminator'
 
 class ModelConfig(framework.GanModelConfig):
   def __init__(self):
