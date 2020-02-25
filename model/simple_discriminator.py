@@ -87,8 +87,6 @@ class Model(nn.Module):
       y = kwargs['y']
       loss = F.cross_entropy(logits, y)
       return loss, dist2img
-      # predicts = F.softmax(logits, dim=-1)
-      # return predicts, loss
     elif mode == 'val':
       b = fts.size(0)
       

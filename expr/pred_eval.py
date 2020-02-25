@@ -546,24 +546,24 @@ def eval_precision_recall():
 
 
 def eval_precision():
-  # root_dir = '/data1/jiac/mscoco' # mercurial
+  root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
-  root_dir = '/hdd/mscoco' # aws
+  # root_dir = '/hdd/mscoco' # aws
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
   # epoch = 38
-  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
-  # epoch = 48
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
+  epoch = 48
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_rl_expr', 'tf_resnet152_450.512.512.0.0.lstm')
   # epoch = 36
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
   # epoch = 35
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.50.5.5.0.80.5.0')
   # epoch = 39
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0')
-  epoch = 40
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0')
+  # epoch = 40
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0')
   # epoch = 16
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8')

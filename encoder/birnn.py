@@ -29,9 +29,9 @@ class Encoder(nn.Module):
     self.embed = nn.Embedding(self._config.num_word, self._config.dim_embed)
 
     if self._config.cell == 'gru':
-      self.birnn = nn.GRU(self._config.dim_embed, self._config.dim_hidden/2, bidirectional=True)
+      self.birnn = nn.GRU(self._config.dim_embed, self._config.dim_hidden, bidirectional=True)
     elif self._config.cell == 'lstm':
-      self.birnn = nn.LSTM(self._config.dim_embed, self._config.dim_hidden/2, bidirectional=True)
+      self.birnn = nn.LSTM(self._config.dim_embed, self._config.dim_hidden, bidirectional=True)
 
     self.dropin = nn.Dropout(p=self._config.dropin)
   
@@ -51,7 +51,7 @@ class Encoder(nn.Module):
       j = lens[i]-1
       forward_last_hidden = output[j, i, :self._config.dim_hidden]
       backward_last_hidden = output[0, i, self._config.dim_hidden:]
-      last_hidden = torch.cat([forward_last_hidden, backward_last_hidden])
-      last_hiddens.append(last_hidden)
-    last_hiddens = torch.stack(last_hiddens, 0) # (b, dim_hidden)
+      hidden = (forward_last_hidden + backward_last_hidden) / 2.
+      last_hiddens.append(hidden)
+    last_hiddens = torch.stack(last_hiddens, 0)
     return last_hiddens
