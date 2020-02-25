@@ -885,7 +885,7 @@ def gen_vead_gan_cider_sc_cfg():
   model_cfg = model.vead_gan_cider_sc.gen_cfg(**params)
   outprefix = '%s.%d.%d.%d.%d.%d.%s.%s.%d.%d.%d.%.2f.%d.%.1f.%.1f'%(
     os.path.join(out_dir, 'bottomup'),
-    params['dim_hidden'], params['dim_embed'], params['dim_key'], params['dim_val'], params['dim_boom'], params['sim'], params['sim'], params['g_baseline'],
+    params['dim_hidden'], params['dim_embed'], params['dim_key'], params['dim_val'], params['dim_boom'], params['sim'], params['g_baseline'],
     params['dim_kernel'], params['num_kernel'], params['d_iter'], params['d_val_acc'], 
     params['d_late_fusion'], params['d_quality_alpha'], params['d_cider_alpha']
   )
