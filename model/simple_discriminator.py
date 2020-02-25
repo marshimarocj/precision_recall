@@ -11,6 +11,7 @@ import sklearn.metrics
 
 from base import framework
 import encoder.rnn
+import encoder.birnn
 import encoder.pca
 import model.util
 
@@ -26,6 +27,7 @@ class ModelConfig(framework.ModelConfig):
     self.num_kernel = 50
     self.noise = .5
     self.dim_ft = 2048
+    self.bidirectional = False
 
 
 def gen_cfg(**kwargs):
@@ -40,6 +42,7 @@ def gen_cfg(**kwargs):
   cfg.num_kernel = kwargs['num_kernel']
   cfg.noise = kwargs['discriminator_noise']
   cfg.dim_ft = kwargs['dim_ft']
+  cfg.bidirectional = kwargs['bidirectional']
 
   sent_enc_cfg = cfg.subcfgs[SE]
   sent_enc_cfg.cell = kwargs['cell']
@@ -57,7 +60,10 @@ class Model(nn.Module):
     self._config = config
     sent_enc_cfg = self._config.subcfgs[SE]
 
-    self.sent_encoder = encoder.rnn.Encoder(sent_enc_cfg)
+    if self._config.bidirectional:
+      self.sent_encoder = encoder.birnn.Encoder(sent_enc_cfg)
+    else:
+      self.sent_encoder = encoder.rnn.Encoder(sent_enc_cfg)
 
     dim_all_kernels = self._config.dim_kernel * self._config.num_kernel
     self.img_embed = nn.Linear(self._config.dim_ft, dim_all_kernels, bias=False)
