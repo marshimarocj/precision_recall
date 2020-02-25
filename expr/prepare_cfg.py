@@ -867,13 +867,13 @@ def gen_vead_gan_simple_cider_sc_cfg():
 
     'd_noise': .5,
     'dim_kernel': 64,
-    'num_kernel': 8,
+    'num_kernel': 64,
     'd_num_epoch': 5,
     'd_lr': 1e-3,
     'd_iter': 5,
     'd_val_acc': .8,
     'reward_alpha': 5.,
-    'd_buffer_size': 15,
+    'd_buffer_size': 5,
   }
 
   model_cfg = model.vead_gan_simple_cider_sc.gen_cfg(**params)
@@ -916,7 +916,7 @@ def gen_vead_gan_simple_cider_sc_cfg():
 if __name__ == '__main__':
   # gen_discriminator_cfg()
   # gen_simple_discriminator_cfg()
-  gen_simple_birnn_discriminator_cfg()
+  # gen_simple_birnn_discriminator_cfg()
   # gen_margin_discriminator_cfg()
   # gen_vevd_ml_cfg()
   # gen_vevd_sc_cfg()
@@ -929,4 +929,4 @@ if __name__ == '__main__':
   # gen_gan_cider_sc_cfg()
 
   # gen_vead_gan_simple_sc_cfg()
-  # gen_vead_gan_simple_cider_sc_cfg()
+  gen_vead_gan_simple_cider_sc_cfg()
