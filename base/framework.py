@@ -381,7 +381,7 @@ class GanTrnTst(object):
       if self.model_cfg.d_iter > 0 and step % self.model_cfg.d_iter == 0:
         d_num_epoch = self.model_cfg.d_num_epoch
         for _ in range(d_num_epoch):
-          for data in buffer:
+          for data in buffer[::-1]:
             self.model.eval()
             acc = self.d_validation([data])
             if acc >= self.model_cfg.d_val_acc:
