@@ -578,7 +578,7 @@ def eval_spice():
     os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.spice.json'%epoch),
   ]
 
-  for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_recall_files):
+  for pred_file, out_precision_file in zip(pred_files, out_precision_files):
     with open(pred_file) as f:
       vid2sent_scores = json.load(f)
 
