@@ -110,6 +110,41 @@ def eval_precision(vid2sent_scores, vid2gt, num):
   return precisions
 
 
+def eval_spice(vid2sent_scores, vid2gt, num):
+  from spice.spice import Spice
+
+  vids = vid2sent_scores.keys()
+
+  gts = {}
+  for vid in vids:
+    gts[vid] = vid2gt[int(vid)]
+
+  cum_spice = 0.
+  precisions = {
+    'spice': [],
+  }
+  for i in range(num):
+    if (i+1) % 10 == 0:
+      print i+1
+    spice = Spice()
+
+    predicts = {}
+    for vid in vids:
+      sent_scores = vid2sent_scores[vid]
+      if len(sent_scores) <= i:
+        predicts[vid] = ['<EOS>']
+      else:
+        predicts[vid] = [sent_scores[i]['sent']]
+    
+    res_spice, _ = spice.compute_score(gts, predicts)
+
+    cum_spice += res_spice
+
+    precisions['spice'].append(cum_spice / (i+1))
+
+  return precisions
+
+
 def eval_recall(vid2sent_scores, num):
   vids = vid2sent_scores.keys()
 
@@ -510,6 +545,57 @@ def eval_precision_recall():
       json.dump(recalls, fout)
 
 
+def eval_spice():
+  # root_dir = '/data1/jiac/mscoco' # mercurial
+  # root_dir = '/data1/jiac/MSCOCO' # uranus
+  root_dir = '/hdd/mscoco' # aws
+  # root_dir = '/mnt/data1/jiac/mscoco' # neptune
+  gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
+
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
+  # epoch = 38
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
+  # epoch = 48
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_rl_expr', 'tf_resnet152_450.512.512.0.0.lstm')
+  # epoch = 36
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
+  # epoch = 35
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.50.5.5.0.80.5.0')
+  # epoch = 39
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0')
+  # epoch = 40
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0')
+  # epoch = 16
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8')
+  # epoch = 4
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
+  epoch = 21
+
+  pred_files = [
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
+  ]
+  out_precision_files = [
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.spice.json'%epoch),
+  ]
+
+  for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_recall_files):
+    with open(pred_file) as f:
+      vid2sent_scores = json.load(f)
+
+    num = 0
+    for vid in vid2sent_scores:
+      num+= len(vid2sent_scores[vid])
+    num /= len(vid2sent_scores)
+    print num
+
+    with open(gt_file) as f:
+      vid2gt = cPickle.load(f)
+
+    precisions = eval_spice(vid2sent_scores, vid2gt, num)
+    with open(out_precision_file, 'w') as fout:
+      json.dump(precisions, fout)
+
+
 def predict_eval_discriminator():
   root_dir = '/data1/jiac/mscoco' # mercurial
   
@@ -533,5 +619,6 @@ if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
   # gather_predict_score()
-  eval_precision_recall()
+  # eval_precision_recall()
+  eval_spice()
   # predict_eval_discriminator()
