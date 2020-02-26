@@ -362,7 +362,7 @@ def predict_decode():
 
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
   # model_name = 'pytorch/vevd_gan_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8'
-  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5'
+  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
   python_file = 'gan_sc_decode.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
@@ -370,8 +370,8 @@ def predict_decode():
   model_cfg_file = os.path.join(root_dir, model_name + '.model.json')
   path_cfg_file = os.path.join(root_dir, model_name + '.path.json')
 
-  gpuid = 1
-  best_epochs = [21]
+  gpuid = 0
+  best_epochs = [44]
 
   predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid, 
     strategy='beam', beam_width=100, pool_size=100)
@@ -616,8 +616,8 @@ def predict_eval_discriminator():
 
 
 if __name__ == '__main__':
-  predict_eval()
-  # predict_decode()
+  # predict_eval()
+  predict_decode()
   # gather_predict_score()
   # eval_precision_recall()
   # eval_precision()
