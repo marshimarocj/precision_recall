@@ -664,7 +664,7 @@ def eval_human():
 
   vid2gts = {}
   for vid in vids:
-    vid2gts[vid] = data[str(vid)]
+    vid2gts[vid] = data[vid]
 
   vid2predict = {}
   for vid in vid2gts:
