@@ -478,14 +478,14 @@ def gather_predict_score():
 
 
 def eval_precision_recall():
-  # root_dir = '/data1/jiac/mscoco' # mercurial
+  root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
-  root_dir = '/hdd/mscoco' # aws
+  # root_dir = '/hdd/mscoco' # aws
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
-  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
-  # epoch = 38
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
+  epoch = 38
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
   # epoch = 48
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_rl_expr', 'tf_resnet152_450.512.512.0.0.lstm')
@@ -507,40 +507,34 @@ def eval_precision_recall():
 
   # expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add')
   # epoch = 11
-  expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add')
-  epoch = 31
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add')
+  # epoch = 31
 
-  # pred_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.json')
-  # out_precision_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.precision.json')
-  # out_recall_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.recall.json')
-
-  # pred_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.90-50-sample_topk-10-50.json')
-  # out_precision_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.90-50-sample_topk-10-50.precision.json')
-  # out_recall_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.90-50-sample_topk-10-50.recall.json')
 
   pred_files = [
-    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
-    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.json'%epoch),
   ]
   out_precision_files = [
-    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision.json'%epoch),
-    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.precision.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.precision.json'%epoch),
   ]
   out_recall_files = [
-    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.recall.json'%epoch),
-    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.recall.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.recall.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.recall.json'%epoch),
   ]
   out_corpus_recall_files = [
-    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-ucleus_sample-0.90-100.gather.corpus_recall.json'%epoch),
   ]
 
   for pred_file, out_precision_file, out_recall_file, out_corpus_recall_file in zip(pred_files, out_precision_files, out_recall_files, out_corpus_recall_files):
@@ -641,10 +635,98 @@ def predict_eval_discriminator():
   predict(python_file, model_cfg_file, path_cfg_file, [best_epoch], gpuid)
 
 
+def fuse_precision():
+  root_dir = '/home/jiac/data/precision_recall' # earth
+
+  prefix = os.path.join(root_dir, 'vevd_ml', '38-beam-100-100.gather')
+
+  precision_file = prefix + '.precision.json'
+  spice_file = prefix + '.spice.json'
+
+  with open(precision_file) as f:
+    out_data = json.load(f)
+  with open(spice_file) as f:
+    data = json.load(f)
+  out_data['spice'] = data['spice']
+  with open(precision_file, 'w') as fout:
+    json.dump(out_data, fout)
+
+
+def eval_human():
+  root_dir = '/hdd/mscoco' # aws
+  vid_file = os.path.join(root_dir, 'split', 'tst_videoids.npy')
+  gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
+
+  vids = np.load(vid_file)
+
+  with open(gt_file) as f:
+    data = pickle.load(f)
+
+  vid2gts = {}
+  for vid in vids:
+    vid2gts[vid] = data[str(vid)]
+
+  vid2predict = {}
+  for vid in vid2gts:
+    vid2predict[vid] = vid2gts[vid][:1]
+
+  bleu_scorer = Bleu(4)
+  meteor_scorer = Meteor()
+  rouge_scorer = Rouge()
+  cider_scorer = Cider()
+  spice_scorer = Spice()
+
+  res_bleu, _ = bleu_scorer.compute_score(vid2gts, vid2predict)
+  # metero handles the multi references (don't know the details yet)
+  res_meteor, _ = meteor_scorer.compute_score(vid2gts, vid2predict)
+  meteor_scorer.meteor_p.kill()
+  # average
+  res_rouge, _ = rouge_scorer.compute_score(vid2gts, vid2predict)
+  # average
+  res_cider, _ = cider_scorer.compute_score(vid2gts, vid2predict)
+  res_spice, _ = spice_scorer.compute_score(vid2gts, vid2predict)
+
+  upper_content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
+        res_bleu[0]*100, res_bleu[1]*100, res_bleu[2]*100, res_bleu[3]*100,
+        res_meteor*100, res_rouge*100, res_cider*100, res_spice*100)
+  print upper_content
+
+  vid2leave_one_out = {}
+  for vid in vid2gts:
+    vid2leave_one_out[vid] = vid2gts[vid][1:]
+
+  bleu_scorer = Bleu(4)
+  meteor_scorer = Meteor()
+  rouge_scorer = Rouge()
+  cider_scorer = Cider()
+  spice_scorer = Spice()
+
+  res_bleu, _ = bleu_scorer.compute_score(vid2leave_one_out, vid2predict)
+  # metero handles the multi references (don't know the details yet)
+  res_meteor, _ = meteor_scorer.compute_score(vid2leave_one_out, vid2predict)
+  meteor_scorer.meteor_p.kill()
+  # average
+  res_rouge, _ = rouge_scorer.compute_score(vid2leave_one_out, vid2predict)
+  # average
+  res_cider, _ = cider_scorer.compute_score(vid2leave_one_out, vid2predict)
+  res_spice, _ = spice_scorer.compute_score(vid2leave_one_out, vid2predict)
+
+  lower_content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
+        res_bleu[0]*100, res_bleu[1]*100, res_bleu[2]*100, res_bleu[3]*100,
+        res_meteor*100, res_rouge*100, res_cider*100, res_spice*100)
+  print lower_content
+
+  with open('eval.txt', 'w') as fout:
+    fout.write(lower_content + '\n')
+    fout.write(upper_content + '\n')
+
+
 if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
-  gather_predict_score()
-  eval_precision_recall()
+  # gather_predict_score()
+  # eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
+  # fuse_precision()
+  eval_human()
