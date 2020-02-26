@@ -12,7 +12,7 @@ from bleu.bleu import Bleu
 from cider.cider import Cider
 from rouge.rouge import Rouge
 from meteor.meteor import Meteor
-# from spice.spice import Spice
+from spice.spice import Spice
 
 
 '''func
@@ -36,7 +36,7 @@ def eval(predict_file, groundtruth_file):
   meteor_scorer = Meteor()
   rouge_scorer = Rouge()
   cider_scorer = Cider()
-  # spice_scorer = Spice()
+  spice_scorer = Spice()
   # closest score
   res_bleu, _ = bleu_scorer.compute_score(gts, res)
   # metero handles the multi references (don't know the details yet)
@@ -46,14 +46,14 @@ def eval(predict_file, groundtruth_file):
   res_rouge, _ = rouge_scorer.compute_score(gts, res)
   # average
   res_cider, _ = cider_scorer.compute_score(gts, res)
-  # res_spice, _ = spice_scorer.compute_score(gts, res)
+  res_spice, _ = spice_scorer.compute_score(gts, res)
 
   out = {
     'bleu': res_bleu, 
     'meteor': res_meteor,
     'rouge': res_rouge,
     'cider': res_cider,
-    # 'spice': res_spice,
+    'spice': res_spice,
   }
 
   return out
@@ -66,7 +66,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
   for vid in vids:
     gts[vid] = vid2gt[int(vid)]
 
-  cum_bleu4, cum_meteor, cum_rouge, cum_cider = 0., 0., 0., 0.
+  cum_bleu4, cum_meteor, cum_rouge, cum_cider, cum_spice = 0., 0., 0., 0., 0.
   precisions = {
     'bleu4': [],
     'meteor': [],
@@ -94,11 +94,13 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     meteor_scorer.meteor_p.kill()
     res_rouge, _ = rouge_scorer.compute_score(gts, predicts)
     res_cider, _ = cider_scorer.compute_score(gts, predicts)
+    res_spice, _ = spice_scorer.compute_score(gts, predicts)
 
     cum_bleu4 += res_bleu[-1]
     cum_meteor += res_meteor
     cum_rouge += res_rouge
     cum_cider += res_cider
+    cum_spice += res_spice
 
     # precision = (cum_bleu4 + cum_meteor + cum_rouge + cum_cider) / (i+1)
     # precisions.append(precision)
@@ -106,6 +108,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     precisions['meteor'].append(cum_meteor / (i+1))
     precisions['rouge'].append(cum_rouge / (i+1))
     precisions['cider'].append(cum_cider / (i+1))
+    precisions['spice'].append(cum_spice / (i+1))
 
   return precisions
 
@@ -313,7 +316,7 @@ def predict_eval():
 
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
   # model_name = 'pytorch/vevd_gan_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8'
-  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
+  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
   python_file = 'gan_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
@@ -327,18 +330,18 @@ def predict_eval():
   print(best_epochs)
 
   with open('eval.%d.txt'%gpuid, 'w') as fout:
-    predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
+    # predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
 
     for best_epoch in best_epochs:
       predict_file = os.path.join(preddir, '%d-5.json'%best_epoch)
 
       out = eval(predict_file, gt_file)
-      # content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
-      #   out['bleu'][0]*100, out['bleu'][1]*100, out['bleu'][2]*100, out['bleu'][3]*100,
-      #   out['meteor']*100, out['rouge']*100, out['cider']*100, out['spice']*100)
-      content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
+      content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
         out['bleu'][0]*100, out['bleu'][1]*100, out['bleu'][2]*100, out['bleu'][3]*100,
-        out['meteor']*100, out['rouge']*100, out['cider']*100)
+        out['meteor']*100, out['rouge']*100, out['cider']*100, out['spice']*100)
+      # content = '%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f'%(
+      #   out['bleu'][0]*100, out['bleu'][1]*100, out['bleu'][2]*100, out['bleu'][3]*100,
+      #   out['meteor']*100, out['rouge']*100, out['cider']*100)
       print(best_epoch)
       print(content)
       fout.write(str(best_epoch) + '\t' + content + '\n')
@@ -620,9 +623,9 @@ def predict_eval_discriminator():
 
 
 if __name__ == '__main__':
-  # predict_eval()
+  predict_eval()
   # predict_decode()
   # gather_predict_score()
-  eval_precision_recall()
+  # eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
