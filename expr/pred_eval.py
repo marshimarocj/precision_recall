@@ -316,7 +316,7 @@ def predict_eval():
 
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
   # model_name = 'pytorch/vevd_gan_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8'
-  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
+  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5'
   python_file = 'gan_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
