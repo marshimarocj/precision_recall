@@ -80,7 +80,6 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     meteor_scorer = Meteor()
     rouge_scorer = Rouge()
     cider_scorer = Cider() # need to accelerate
-    spice_scorer = Spice()
 
     predicts = {}
     for vid in vids:
@@ -95,13 +94,11 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     meteor_scorer.meteor_p.kill()
     res_rouge, _ = rouge_scorer.compute_score(gts, predicts)
     res_cider, _ = cider_scorer.compute_score(gts, predicts)
-    res_spice, _ = spice_scorer.compute_score(gts, predicts)
 
     cum_bleu4 += res_bleu[-1]
     cum_meteor += res_meteor
     cum_rouge += res_rouge
     cum_cider += res_cider
-    cum_spice += res_spice
 
     # precision = (cum_bleu4 + cum_meteor + cum_rouge + cum_cider) / (i+1)
     # precisions.append(precision)
@@ -109,7 +106,6 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     precisions['meteor'].append(cum_meteor / (i+1))
     precisions['rouge'].append(cum_rouge / (i+1))
     precisions['cider'].append(cum_cider / (i+1))
-    precisions['spice'].append(cum_spice / (i+1))
 
   return precisions
 
@@ -546,9 +542,9 @@ def eval_precision_recall():
     with open(gt_file) as f:
       vid2gt = pickle.load(f)
 
-    precisions = eval_precision(vid2sent_scores, vid2gt, num)
-    with open(out_precision_file, 'w') as fout:
-      json.dump(precisions, fout)
+    # precisions = eval_precision(vid2sent_scores, vid2gt, num)
+    # with open(out_precision_file, 'w') as fout:
+    #   json.dump(precisions, fout)
 
     recalls = eval_recall(vid2sent_scores, num)
     # recalls = eval_corpus_recall(vid2sent_scores, num)
