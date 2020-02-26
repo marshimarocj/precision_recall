@@ -72,6 +72,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     'meteor': [],
     'rouge': [],
     'cider': [],
+    'spice': [],
   }
   for i in range(num):
     if (i+1) % 10 == 0:
@@ -80,6 +81,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     meteor_scorer = Meteor()
     rouge_scorer = Rouge()
     cider_scorer = Cider() # need to accelerate
+    spice_scorer = Spice()
 
     predicts = {}
     for vid in vids:
@@ -94,11 +96,13 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     meteor_scorer.meteor_p.kill()
     res_rouge, _ = rouge_scorer.compute_score(gts, predicts)
     res_cider, _ = cider_scorer.compute_score(gts, predicts)
+    res_spice, _ = spice_scorer.compute_score(gts, predicts)
 
     cum_bleu4 += res_bleu[-1]
     cum_meteor += res_meteor
     cum_rouge += res_rouge
     cum_cider += res_cider
+    cum_spice += res_spice
 
     # precision = (cum_bleu4 + cum_meteor + cum_rouge + cum_cider) / (i+1)
     # precisions.append(precision)
@@ -106,6 +110,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     precisions['meteor'].append(cum_meteor / (i+1))
     precisions['rouge'].append(cum_rouge / (i+1))
     precisions['cider'].append(cum_cider / (i+1))
+    precisions['spice'].append(cum_spice / (i+1))
 
   return precisions
 
@@ -410,8 +415,11 @@ def gather_predict_score():
   # epoch = 4
   # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5', 'pred')
   # epoch = 21
-  pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0', 'pred')
-  epoch = 44
+  # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0', 'pred')
+  # epoch = 44
+
+  pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add', 'pred')
+  epoch = 11
 
   # pred_files = [
   # #   os.path.join(pred_dir, '%d-beam-50-50.json'%epoch),
@@ -492,8 +500,11 @@ def eval_precision_recall():
   # epoch = 4
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
   # epoch = 21
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0')
-  epoch = 44
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0')
+  # epoch = 44
+
+  pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add', 'pred')
+  epoch = 11
 
   # pred_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.json')
   # out_precision_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.precision.json')
@@ -524,12 +535,11 @@ def eval_precision_recall():
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.recall.json'%epoch),
   ]
-  # out_corpus_recall_files = [
-  #   os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
-  # ]
+  out_corpus_recall_files = [
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
+  ]
 
-  for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_recall_files):
-  # for pred_file, out_precision_file, out_recall_file in zip(pred_files, out_precision_files, out_corpus_recall_files):
+  for pred_file, out_precision_file, out_recall_file, out_corpus_recall_file in zip(pred_files, out_precision_files, out_recall_files, out_corpus_recall_files):
     with open(pred_file) as f:
       vid2sent_scores = json.load(f)
 
@@ -542,13 +552,16 @@ def eval_precision_recall():
     with open(gt_file) as f:
       vid2gt = pickle.load(f)
 
-    # precisions = eval_precision(vid2sent_scores, vid2gt, num)
-    # with open(out_precision_file, 'w') as fout:
-    #   json.dump(precisions, fout)
+    precisions = eval_precision(vid2sent_scores, vid2gt, num)
+    with open(out_precision_file, 'w') as fout:
+      json.dump(precisions, fout)
 
     recalls = eval_recall(vid2sent_scores, num)
-    # recalls = eval_corpus_recall(vid2sent_scores, num)
     with open(out_recall_file, 'w') as fout:
+      json.dump(recalls, fout)
+
+    recalls = eval_corpus_recall(vid2sent_scores, num)
+    with open(out_corpus_recall_file, 'w') as fout:
       json.dump(recalls, fout)
 
 
