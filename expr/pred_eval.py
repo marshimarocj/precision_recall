@@ -549,7 +549,7 @@ def eval_precision_recall():
       json.dump(recalls, fout)
 
 
-def eval_precision():
+def eval_precision_only():
   root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
   # root_dir = '/hdd/mscoco' # aws
@@ -622,7 +622,7 @@ def predict_eval_discriminator():
 if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
-  gather_predict_score()
+  # gather_predict_score()
   eval_precision_recall()
-  # eval_precision()
+  # eval_precision_only()
   # predict_eval_discriminator()
