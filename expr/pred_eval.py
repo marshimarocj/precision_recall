@@ -405,8 +405,10 @@ def gather_predict_score():
   # epoch = 16
   # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8', 'pred')
   # epoch = 4
-  pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5', 'pred')
-  epoch = 21
+  # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5', 'pred')
+  # epoch = 21
+  pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0', 'pred')
+  epoch = 44
 
   # pred_files = [
   # #   os.path.join(pred_dir, '%d-beam-50-50.json'%epoch),
@@ -485,8 +487,10 @@ def eval_precision_recall():
   # epoch = 16
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8')
   # epoch = 4
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
-  epoch = 21
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
+  # epoch = 21
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0')
+  epoch = 44
 
   # pred_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.json')
   # out_precision_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.precision.json')
@@ -535,9 +539,9 @@ def eval_precision_recall():
     with open(gt_file) as f:
       vid2gt = pickle.load(f)
 
-    # precisions = eval_precision(vid2sent_scores, vid2gt, num)
-    # with open(out_precision_file, 'w') as fout:
-    #   json.dump(precisions, fout)
+    precisions = eval_precision(vid2sent_scores, vid2gt, num)
+    with open(out_precision_file, 'w') as fout:
+      json.dump(precisions, fout)
 
     # recalls = eval_recall(vid2sent_scores, num)
     recalls = eval_corpus_recall(vid2sent_scores, num)
@@ -617,8 +621,8 @@ def predict_eval_discriminator():
 
 if __name__ == '__main__':
   # predict_eval()
-  predict_decode()
+  # predict_decode()
   # gather_predict_score()
-  # eval_precision_recall()
+  eval_precision_recall()
   # eval_precision()
   # predict_eval_discriminator()
