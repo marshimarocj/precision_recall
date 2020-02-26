@@ -640,7 +640,7 @@ def predict_eval_discriminator():
 if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
-  # gather_predict_score()
+  gather_predict_score()
   eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
