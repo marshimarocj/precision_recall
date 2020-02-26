@@ -80,6 +80,7 @@ def eval_precision(vid2sent_scores, vid2gt, num):
     meteor_scorer = Meteor()
     rouge_scorer = Rouge()
     cider_scorer = Cider() # need to accelerate
+    spice_scorer = Spice()
 
     predicts = {}
     for vid in vids:
