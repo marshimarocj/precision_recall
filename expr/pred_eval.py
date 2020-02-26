@@ -418,8 +418,10 @@ def gather_predict_score():
   # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0', 'pred')
   # epoch = 44
 
-  pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add', 'pred')
-  epoch = 11
+  # pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add', 'pred')
+  # epoch = 11
+  pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add', 'pred')
+  epoch = 31
 
   # pred_files = [
   # #   os.path.join(pred_dir, '%d-beam-50-50.json'%epoch),
@@ -503,8 +505,10 @@ def eval_precision_recall():
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0')
   # epoch = 44
 
-  expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add')
-  epoch = 11
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add')
+  # epoch = 11
+  expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add')
+  epoch = 31
 
   # pred_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.json')
   # out_precision_file = os.path.join(expr_dir, 'pred', '38-beam-50-50-nucleus_sample-0.80-50-sample_topk-5-50.precision.json')
