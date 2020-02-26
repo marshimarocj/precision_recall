@@ -291,9 +291,9 @@ def predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid, **kw
 '''
 def predict_eval():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  root_dir = '/mnt/data1/jiac/mscoco' # neptune
+  # root_dir = '/mnt/data1/jiac/mscoco' # neptune
   # root_dir = '/data1/jiac/MSCOCO' # uranus
-  # root_dir = '/hdd/mscoco' # aws
+  root_dir = '/hdd/mscoco' # aws
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
   # model_name = 'pytorch/vevd_ml_expr/tf_resnet152_450.512.512.0.lstm'
