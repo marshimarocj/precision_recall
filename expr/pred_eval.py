@@ -290,14 +290,14 @@ def predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid, **kw
 '''expr
 '''
 def predict_eval():
-  root_dir = '/data1/jiac/mscoco' # mercurial
-  # root_dir = '/mnt/data1/jiac/mscoco' # neptune
+  # root_dir = '/data1/jiac/mscoco' # mercurial
+  root_dir = '/mnt/data1/jiac/mscoco' # neptune
   # root_dir = '/data1/jiac/MSCOCO' # uranus
   # root_dir = '/hdd/mscoco' # aws
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
-  model_name = 'pytorch/vevd_ml_expr/tf_resnet152_450.512.512.0.lstm'
-  python_file = 'vevd_ml.py'
+  # model_name = 'pytorch/vevd_ml_expr/tf_resnet152_450.512.512.0.lstm'
+  # python_file = 'vevd_ml.py'
 
   # model_name = 'pytorch/vevd_sc_expr/tf_resnet152_450.512.512.0.lstm'
   # model_name = 'pytorch/vevd_sc_expr/tf_resnet152_450.512.512.0.lstm.1'
@@ -318,6 +318,9 @@ def predict_eval():
   # model_name = 'pytorch/vevd_gan_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8'
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
   # python_file = 'gan_sc.py'
+
+  model_name = 'pytorch/pure_vead_ml_expr/bottomup.512.512.512.512.2048.1.0.att2in_boom.add'
+  python_file = ''
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
