@@ -360,7 +360,7 @@ class TrnTst(framework.GanTrnTst):
         beam_ends = beam_ends.data.cpu().numpy()
         out_wids = out_wids.data.cpu().numpy()
 
-        candidates = util.beamsearch_recover_captions(out_wids, beam_cum_log_probs, beam_pres, beam_ends)
+        candidates = model.util.beamsearch_recover_captions(out_wids, beam_cum_log_probs, beam_pres, beam_ends)
 
         for i, candidate in enumerate(candidates):
           vid = data['vids'][i]
