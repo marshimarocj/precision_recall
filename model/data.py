@@ -7,7 +7,6 @@ sys.path.append('../')
 import numpy as np
 import torch
 import torchvision
-import cv2
 
 from base import framework
 
@@ -722,6 +721,8 @@ class AttTrnSimpleGanReader(framework.Reader):
 
 
 def load_and_norm_img(img_file, transform):
+  import cv2
+
   img = cv2.imread(img_file)
   h, w, _ = img.shape
   if max(h, w) > 450:
