@@ -395,7 +395,7 @@ def predict_eval():
   print(best_epochs)
 
   with open('eval.%d.txt'%gpuid, 'w') as fout:
-    predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
+    # predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
 
     for best_epoch in best_epochs:
       predict_file = os.path.join(preddir, '%d-5.json'%best_epoch)
