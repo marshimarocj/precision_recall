@@ -850,9 +850,9 @@ def eval_human():
 if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
-  gather_predict_score()
-  eval_precision_recall()
-  # eval_precision_only()
+  # gather_predict_score()
+  # eval_precision_recall()
+  eval_precision_only()
   # predict_eval_discriminator()
   # fuse_precision()
   # eval_human()
