@@ -584,7 +584,7 @@ def eval_precision_recall():
   # epoch = 11
   # expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add')
   # epoch = 31
-  pred_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0', 'pred')
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0')
   epoch = 30
 
   pred_files = [
@@ -834,7 +834,7 @@ def eval_human():
 if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
-  gather_predict_score()
+  # gather_predict_score()
   eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
