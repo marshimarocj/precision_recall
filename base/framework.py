@@ -176,7 +176,7 @@ class TrnTst(object):
     step = 0
     history = []
     for epoch in range(base_epoch, self.model_cfg.num_epoch):
-      history = self.change_lr(history, metrics)
+      # history = self.change_lr(history, metrics)
 
       step, avg_loss = self._iterate_epoch(step, epoch)
 
