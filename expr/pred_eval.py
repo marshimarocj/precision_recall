@@ -497,8 +497,10 @@ def gather_predict_score():
   # epoch = 11
   # pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add', 'pred')
   # epoch = 31
-  pred_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0', 'pred')
-  epoch = 30
+  # pred_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0', 'pred')
+  # epoch = 30
+  pred_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_simple_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.64.8.5.0.80.5.0', 'pred')
+  epoch = 23
 
   # pred_files = [
   # #   os.path.join(pred_dir, '%d-beam-50-50.json'%epoch),
@@ -590,8 +592,10 @@ def eval_precision_recall():
   # epoch = 11
   # expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add')
   # epoch = 31
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0')
-  epoch = 30
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0')
+  # epoch = 30
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_simple_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.64.8.5.0.80.5.0')
+  epoch = 23
 
   pred_files = [
     os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
@@ -659,8 +663,10 @@ def eval_precision_by_sent():
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
   # epoch = 35
 
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0')
-  epoch = 30
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0')
+  # epoch = 30
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_simple_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.64.8.5.0.80.5.0')
+  epoch = 23
 
   pred_file = os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch)
   out_file = os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision_detail.json'%epoch)
@@ -843,9 +849,9 @@ def eval_human():
 
 if __name__ == '__main__':
   # predict_eval()
-  predict_decode()
-  # gather_predict_score()
-  # eval_precision_recall()
+  # predict_decode()
+  gather_predict_score()
+  eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
   # fuse_precision()
