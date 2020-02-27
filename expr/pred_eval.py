@@ -642,15 +642,19 @@ def eval_precision_recall():
 
 def eval_precision_by_sent():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/data1/jiac/MSCOCO' # uranus
+  root_dir = '/hdd/mscoco' # aws
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
   # epoch = 38
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
   # epoch = 48
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
-  epoch = 35
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
+  # epoch = 35
+
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vead_gan_cider_sc_expr', 'bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0')
+  epoch = 30
 
   pred_file = os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch)
   out_file = os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision_detail.json'%epoch)
@@ -835,9 +839,9 @@ if __name__ == '__main__':
   # predict_eval()
   # predict_decode()
   # gather_predict_score()
-  eval_precision_recall()
+  # eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
   # fuse_precision()
   # eval_human()
-  # eval_precision_by_sent()
+  eval_precision_by_sent()
