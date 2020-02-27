@@ -438,8 +438,11 @@ def predict_decode():
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
   # python_file = 'gan_sc_decode.py'
 
-  model_name = 'pytorch/vead_gan_cider_sc_expr/bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0'
-  python_file = 'vead_gan_cider_sc.py'
+  # model_name = 'pytorch/vead_gan_cider_sc_expr/bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0'
+  # python_file = 'vead_gan_cider_sc.py'
+
+  model_name = 'pytorch/vead_gan_simple_cider_sc_expr/bottomup.512.512.512.512.2048.add.64.8.5.0.80.5.0'
+  python_file = 'vead_gan_simple_cider_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
@@ -447,7 +450,7 @@ def predict_decode():
   path_cfg_file = os.path.join(root_dir, model_name + '.path.json')
 
   gpuid = 3
-  best_epochs = [30]
+  best_epochs = [23]
 
   predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid, 
     strategy='beam', beam_width=100, pool_size=100)
@@ -839,8 +842,8 @@ def eval_human():
 
 
 if __name__ == '__main__':
-  predict_eval()
-  # predict_decode()
+  # predict_eval()
+  predict_decode()
   # gather_predict_score()
   # eval_precision_recall()
   # eval_precision_only()

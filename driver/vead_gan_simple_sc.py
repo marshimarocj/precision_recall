@@ -20,6 +20,7 @@ def build_parser():
   parser.add_argument('--best_epoch', dest='best_epoch', type=int, default=True)
   parser.add_argument('--strategy', dest='strategy', default='beam')
   parser.add_argument('--beam_width', dest='beam_width', type=int, default=5)
+  parser.add_argument('--pool_size', dest='pool_size', type=int, default=1)
 
   return parser
 
@@ -60,7 +61,11 @@ if __name__ == '__main__':
     model_cfg.subcfgs[model.vead_gan_simple_sc.DEC].beam_width = opts.beam_width
     model_cfg.strategy = opts.strategy
     if model_cfg.strategy == 'beam':
-      path_cfg.predict_file = os.path.join(path_cfg.output_dir, 'pred', '%d-%d.json'%(opts.best_epoch, opts.beam_width))
+      if opts.pool_size > 1:
+        path_cfg.predict_file = os.path.join(path_cfg.output_dir, 'pred', '%d-%s-%d-%d.json'%(
+          opts.best_epoch, opts.strategy, opts.beam_width, opts.pool_size))
+      else:
+        path_cfg.predict_file = os.path.join(path_cfg.output_dir, 'pred', '%d-%d.json'%(opts.best_epoch, opts.beam_width))
     path_cfg.log_dir = ''
 
     trntst = model.vead_gan_simple_sc.TrnTst(model_cfg, path_cfg, [0])

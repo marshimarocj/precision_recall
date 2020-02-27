@@ -360,13 +360,30 @@ class TrnTst(framework.GanTrnTst):
         beam_ends = beam_ends.data.cpu().numpy()
         out_wids = out_wids.data.cpu().numpy()
 
-        candidates = model.util.beamsearch_recover_captions(out_wids, beam_cum_log_probs, beam_pres, beam_ends)
+        if self.model_cfg.pool_size == 1:
+          candidates = model.util.beamsearch_recover_captions(out_wids, beam_cum_log_probs, beam_pres, beam_ends)
 
-        for i, candidate in enumerate(candidates):
-          vid = data['vids'][i]
-          sent = np.array(candidate, dtype=np.int)
-          predict = self.int2str(np.expand_dims(sent, 0))[0]
-          vid2predict[str(vid)] = predict
+          for i, candidate in enumerate(candidates):
+            vid = data['vids'][i]
+            sent = np.array(candidate, dtype=np.int)
+            predict = self.int2str(np.expand_dims(sent, 0))[0]
+            vid2predict[str(vid)] = predict
+        else:
+          candidate_scores = model.util.beamsearch_recover_multiple_captions(
+            out_wids, beam_cum_log_probs, beam_pres, beam_ends, self.model_cfg.pool_size)
+
+          for i, candidate_score in enumerate(candidate_scores):
+            vid = data['vids'][i]
+            out = []
+            for d in candidate_score:
+              sent = np.array(d['sent'])
+              predict = self.int2str(np.expand_dims(sent, 0))[0]
+              score = float(d['score'])
+              out.append({
+                'sent': predict,
+                'score': score,
+              })
+            vid2predict[str(vid)] = out
 
     with open(self.path_cfg.predict_file, 'w') as fout:
       json.dump(vid2predict, fout)
