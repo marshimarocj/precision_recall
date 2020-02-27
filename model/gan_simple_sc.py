@@ -355,7 +355,6 @@ class TrnTst(framework.GanTrnTst):
         sent = np.array(candidate, dtype=np.int)
         predict = self.int2str(np.expand_dims(sent, 0))[0]
         vid2predict[str(vid)] = predict
-      base += self.model_cfg.tst_batch_size
 
     with open(self.path_cfg.predict_file, 'w') as fout:
       json.dump(vid2predict, fout)

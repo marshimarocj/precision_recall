@@ -115,6 +115,64 @@ def eval_precision(vid2sent_scores, vid2gt, num):
   return precisions
 
 
+def eval_precision_detail(vid2sent_scores, vid2gt, num):
+  vids = vid2sent_scores.keys()
+
+  gts = {}
+  for vid in vids:
+    gts[vid] = vid2gt[int(vid)]
+
+  vid2out = {}
+  for vid in vids:
+    vid2out[vid] = []
+
+  for k in range(num):
+    if (k+1) % 10 == 0:
+      print k+1
+
+    predicts = {}
+    for vid in vids:
+      sent_scores = vid2sent_scores[vid]
+      if len(sent_scores) <= k:
+        predicts[vid] = ['<EOS>']
+      else:
+        predicts[vid] = [sent_scores[k]['sent']]
+
+    bleu_scorer = Bleu(4)
+    meteor_scorer = Meteor()
+    rouge_scorer = Rouge()
+    cider_scorer = Cider() # need to accelerate
+    spice_scorer = Spice()
+
+    _, res_bleus = bleu_scorer.compute_score(gts, predicts)
+    _, res_meteors = meteor_scorer.compute_score(gts, predicts)
+    meteor_scorer.meteor_p.kill()
+    _, res_rouges = rouge_scorer.compute_score(gts, predicts)
+    _, res_ciders = cider_scorer.compute_score(gts, predicts)
+    _, res_spices = spice_scorer.compute_score(gts, predicts)
+
+    for vid, b, m, r, c in zip(vids, res_bleus[-1], res_meteors, res_rouges, res_ciders):
+      sent_scores = vid2sent_scores[vid]
+      if len(sent_scores) <= k:
+        continue
+      
+      sent_score = sent_scores[k]
+      sent_score['bleu4'] = b
+      sent_score['meteor'] = m
+      sent_score['rouge'] = r
+      sent_score['cider'] = c
+      vid2out[vid].append(sent_score)
+
+    for vid, s in zip(sorted(vids), res_spices):
+      sent_scores = vid2sent_scores[vid]
+      if len(sent_scores) <= k:
+        continue
+      
+      vid2out[vid][-1]['spice'] = s['All']['f']
+
+  return vid2out
+
+
 def eval_spice(vid2sent_scores, vid2gt, num):
   from spice.spice import Spice
 
@@ -314,6 +372,8 @@ def predict_eval():
 
   # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.50.5.5.0.80.5.0'
   # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0'
+  # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.1.0'
+  # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.2.5'
   # python_file = 'gan_simple_cider_sc.py'
 
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
@@ -321,21 +381,21 @@ def predict_eval():
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
   # python_file = 'gan_sc.py'
 
-  model_name = 'pytorch/pure_vead_ml_expr/bottomup.512.512.512.512.2048.1.0.att2in_boom.add'
-  python_file = ''
+  model_name = 'pytorch/vead_gan_cider_sc_expr/bottomup.512.512.512.512.2048.add.mean.64.8.5.0.80.1.0.8.5.0'
+  python_file = 'vead_gan_cider_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
   model_cfg_file = os.path.join(root_dir, model_name + '.model.json')
   path_cfg_file = os.path.join(root_dir, model_name + '.path.json')
 
-  gpuid = 0
+  gpuid = 3
 
   best_epochs = auto_select(logdir, lower=1)
   print(best_epochs)
 
   with open('eval.%d.txt'%gpuid, 'w') as fout:
-    # predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
+    predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid)
 
     for best_epoch in best_epochs:
       predict_file = os.path.join(preddir, '%d-5.json'%best_epoch)
@@ -354,8 +414,8 @@ def predict_eval():
 
 def predict_decode():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  # root_dir = '/data1/jiac/MSCOCO' # uranus
-  root_dir = '/hdd/mscoco' # aws
+  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/hdd/mscoco' # aws
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
 
   # model_name = 'pytorch/vevd_ml_expr/tf_resnet152_450.512.512.0.lstm'
@@ -366,20 +426,22 @@ def predict_decode():
   # model_name = 'pytorch/vevd_gan_simple_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80'
   # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.50.5.5.0.80.5.0'
   # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0'
-  # python_file = 'gan_simple_sc_decode.py'
+  # model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.1.0'
+  model_name = 'pytorch/vevd_gan_simple_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.2.5'
+  python_file = 'gan_simple_sc_decode.py'
 
   # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.5.0'
   # model_name = 'pytorch/vevd_gan_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8'
-  model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
-  python_file = 'gan_sc_decode.py'
+  # model_name = 'pytorch/vevd_gan_cider_sc_expr/tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.1.0'
+  # python_file = 'gan_sc_decode.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
   model_cfg_file = os.path.join(root_dir, model_name + '.model.json')
   path_cfg_file = os.path.join(root_dir, model_name + '.path.json')
 
-  gpuid = 0
-  best_epochs = [44]
+  gpuid = 1
+  best_epochs = [18]
 
   predict(python_file, model_cfg_file, path_cfg_file, best_epochs, gpuid, 
     strategy='beam', beam_width=100, pool_size=100)
@@ -391,8 +453,8 @@ def predict_decode():
 
 def gather_predict_score():
   # root_dir = '/data1/jiac/mscoco' # mercurial
-  # root_dir = '/data1/jiac/MSCOCO' # uranus
-  root_dir = '/hdd/mscoco' # aws
+  root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/hdd/mscoco' # aws
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
 
   topk = 100
@@ -411,6 +473,10 @@ def gather_predict_score():
   # epoch = 39
   # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0', 'pred')
   # epoch = 16
+  # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.1.0', 'pred')
+  # epoch = 49
+  pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.2.5', 'pred')
+  epoch = 18
   # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8', 'pred')
   # epoch = 4
   # pred_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5', 'pred')
@@ -420,8 +486,8 @@ def gather_predict_score():
 
   # pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_ml_expr', 'bottomup.512.512.512.512.2048.1.0.att2in_boom.add', 'pred')
   # epoch = 11
-  pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add', 'pred')
-  epoch = 31
+  # pred_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add', 'pred')
+  # epoch = 31
 
   # pred_files = [
   # #   os.path.join(pred_dir, '%d-beam-50-50.json'%epoch),
@@ -478,14 +544,14 @@ def gather_predict_score():
 
 
 def eval_precision_recall():
-  root_dir = '/data1/jiac/mscoco' # mercurial
-  # root_dir = '/data1/jiac/MSCOCO' # uranus
+  # root_dir = '/data1/jiac/mscoco' # mercurial
+  root_dir = '/data1/jiac/MSCOCO' # uranus
   # root_dir = '/hdd/mscoco' # aws
   # root_dir = '/mnt/data1/jiac/mscoco' # neptune
   gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
 
-  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
-  epoch = 38
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
+  # epoch = 38
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
   # epoch = 48
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_rl_expr', 'tf_resnet152_450.512.512.0.0.lstm')
@@ -498,6 +564,10 @@ def eval_precision_recall():
   # epoch = 40
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.5.0')
   # epoch = 16
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.1.0')
+  # epoch = 49
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80.2.5')
+  epoch = 18
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8')
   # epoch = 4
   # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_cider_sc_expr', 'tf_resnet152_450.512.512.0.lstm.mean.5.50.5.0.80.1.0.8.2.5')
@@ -510,31 +580,31 @@ def eval_precision_recall():
   # expr_dir = os.path.join(root_dir, 'pytorch', 'pure_vead_sc_expr', 'bottomup.512.512.512.512.2048.1.0.1.att2in_boom.add')
   # epoch = 31
 
-
   pred_files = [
-    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
-    os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.json'%epoch),
   ]
   out_precision_files = [
-    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision.json'%epoch),
-    os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.precision.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.precision.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.precision.json'%epoch),
   ]
   out_recall_files = [
-    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.recall.json'%epoch),
-    os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.recall.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.recall.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.80-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-5-100.gather.recall.json'%epoch),
     # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.recall.json'%epoch),
   ]
   out_corpus_recall_files = [
-    # os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
-    os.path.join(expr_dir, 'pred', '%d-ucleus_sample-0.90-100.gather.corpus_recall.json'%epoch),
+    os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.corpus_recall.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-nucleus_sample-0.90-100.gather.corpus_recall.json'%epoch),
+    # os.path.join(expr_dir, 'pred', '%d-sample_topk-10-100.gather.corpus_recall.json'%epoch),
   ]
 
   for pred_file, out_precision_file, out_recall_file, out_corpus_recall_file in zip(pred_files, out_precision_files, out_recall_files, out_corpus_recall_files):
@@ -561,6 +631,39 @@ def eval_precision_recall():
     recalls = eval_corpus_recall(vid2sent_scores, num)
     with open(out_corpus_recall_file, 'w') as fout:
       json.dump(recalls, fout)
+
+
+def eval_precision_by_sent():
+  # root_dir = '/data1/jiac/mscoco' # mercurial
+  root_dir = '/data1/jiac/MSCOCO' # uranus
+  gt_file = os.path.join(root_dir, 'aux', 'human_caption_dict.pkl')
+
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_ml_expr', 'tf_resnet152_450.512.512.0.lstm')
+  # epoch = 38
+  # expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_sc_expr', 'tf_resnet152_450.512.512.0.lstm')
+  # epoch = 48
+  expr_dir = os.path.join(root_dir, 'pytorch', 'vevd_gan_simple_sc_expr', 'tf_resnet152_450.512.512.0.lstm.5.50.5.0.80')
+  epoch = 35
+
+  pred_file = os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.json'%epoch)
+  out_file = os.path.join(expr_dir, 'pred', '%d-beam-100-100.gather.precision_detail.json'%epoch)
+
+  with open(pred_file) as f:
+    vid2sent_scores = json.load(f)
+
+  with open(gt_file) as f:
+    vid2gt = pickle.load(f)
+
+  num = 0
+  for vid in vid2sent_scores:
+    num+= len(vid2sent_scores[vid])
+  num /= len(vid2sent_scores)
+  print(num)
+
+  vid2out = eval_precision_detail(vid2sent_scores, vid2gt, num)
+
+  with open(out_file, 'w') as fout:
+    json.dump(vid2out, fout)
 
 
 def eval_precision_only():
@@ -722,11 +825,12 @@ def eval_human():
 
 
 if __name__ == '__main__':
-  # predict_eval()
+  predict_eval()
   # predict_decode()
   # gather_predict_score()
   # eval_precision_recall()
   # eval_precision_only()
   # predict_eval_discriminator()
   # fuse_precision()
-  eval_human()
+  # eval_human()
+  # eval_precision_by_sent()
