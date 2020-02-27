@@ -12,7 +12,6 @@ import sklearn.metrics
 from base import framework
 import encoder.rnn
 import encoder.birnn
-import encoder.pca
 import model.util
 
 SE = 'sentence_encoder'

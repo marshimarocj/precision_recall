@@ -15,6 +15,7 @@ import model.gan_cider_sc
 import model.vead_gan_simple_sc
 import model.vead_gan_simple_cider_sc
 import model.vead_gan_cider_sc
+import model.deep_discriminator
 
 
 '''func
@@ -86,13 +87,14 @@ def gen_discriminator_cfg():
 def gen_simple_discriminator_cfg():
   # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
-  # root_dir = '/mnt/data1/jiac/mscoco' # neptune
-  root_dir = '/hdd/mscoco' # aws
+  root_dir = '/mnt/data1/jiac/mscoco' # neptune
+  # root_dir = '/hdd/mscoco' # aws
   split_dir = os.path.join(root_dir, 'pytorch', 'split')
   annotation_dir = os.path.join(root_dir, 'aux')
   out_dir = os.path.join(root_dir, 'pytorch', 'simple_discriminator')
 
-  ft_name = 'tf_resnet152_450'
+  # ft_name = 'tf_resnet152_450'
+  ft_name = 'resnet152_450'
 
   if not os.path.exists(out_dir):
     os.mkdir(out_dir)
@@ -100,10 +102,11 @@ def gen_simple_discriminator_cfg():
   params = {
     'num_epoch': 21,
     'lr': 1e-3,
-    'dim_kernel': 64,
-    'num_kernel': 64,
+    'dim_kernel': 512,
+    'num_kernel': 1,
     'discriminator_noise': .5,
     'dim_ft': 2048,
+    'bidirectional': False,
 
     'cell': 'lstm',
     'dim_input': 512,
@@ -189,6 +192,64 @@ def gen_simple_birnn_discriminator_cfg():
     'groundtruth_file': os.path.join(annotation_dir, 'human_caption_dict.pkl'),
     'word_file': os.path.join(annotation_dir, 'int2word.pkl'),
     'output_dir': output_dir,
+  }
+  path_cfg_file = '%s.path.json'%outprefix
+
+  if not os.path.exists(path_cfg['output_dir']):
+    os.mkdir(path_cfg['output_dir'])
+
+  with open(path_cfg_file, 'w') as fout:
+    json.dump(path_cfg, fout, indent=2)
+
+
+def gen_deep_discriminator_cfg():
+  root_dir = '/mnt/data1/jiac/mscoco' # neptune
+  split_dir = os.path.join(root_dir, 'pytorch', 'split')
+  annotation_dir = os.path.join(root_dir, 'aux')
+  out_dir = os.path.join(root_dir, 'pytorch', 'deep_discriminator')
+
+  if not os.path.exists(out_dir):
+    os.mkdir(out_dir)
+
+  params = {
+    'num_epoch': 21,
+    'lr': 1e-3,
+    'dim_kernel': 512,
+    'num_kernel': 1,
+    'discriminator_noise': .5,
+    'dim_ft': 2048,
+    'bidirectional': False,
+
+    'cell': 'lstm',
+    'dim_input': 512,
+    'dim_hidden': 512,
+    'dropin': .5,
+
+    'cnn': 'resnet152',
+    'cnn_output': '',
+    'finetune_layers': ['layer3', 'layer4'],
+  }
+
+  model_cfg = model.deep_discriminator.gen_cfg(**params)
+  outprefix = '%s/%s.%d.%d.%d.%s'%(
+    out_dir, params['cnn'], 
+    params['dim_kernel'], params['num_kernel'], 
+    params['dim_hidden'], params['cell']
+  )
+  model_cfg_file = '%s.model.json'%outprefix
+  model_cfg.save(model_cfg_file)
+
+  output_dir = outprefix
+  path_cfg = {
+    'img_dir': os.path.join(root_dir, 'resize450'),
+    'trn_annotation_file': os.path.join(split_dir, 'trn_id_caption_mask.pkl'),
+    'val_annotation_file': os.path.join(split_dir, 'val_id_caption_mask.pkl'),
+    'split_dir': split_dir,
+    'annotation_dir': annotation_dir,
+    'groundtruth_file': os.path.join(annotation_dir, 'human_caption_dict.pkl'),
+    'word_file': os.path.join(annotation_dir, 'int2word.pkl'),
+    'output_dir': output_dir,
+    'model_file': os.path.join(output_dir, 'model', 'pretrain.pth')
   }
   path_cfg_file = '%s.path.json'%outprefix
 
@@ -1006,6 +1067,7 @@ def gen_vead_gan_simple_cider_sc_cfg():
 if __name__ == '__main__':
   # gen_discriminator_cfg()
   # gen_simple_discriminator_cfg()
+  gen_deep_discriminator_cfg()
   # gen_simple_birnn_discriminator_cfg()
   # gen_margin_discriminator_cfg()
   # gen_vevd_ml_cfg()
@@ -1020,4 +1082,4 @@ if __name__ == '__main__':
 
   # gen_vead_gan_simple_sc_cfg()
   # gen_vead_gan_simple_cider_sc_cfg()
-  gen_vead_gan_cider_sc_cfg()
+  # gen_vead_gan_cider_sc_cfg()

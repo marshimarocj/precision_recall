@@ -234,6 +234,23 @@ class AttPathCfg(framework.PathCfg):
     self.tst_videoid_file = ''
 
 
+class ImgPathCfg(framework.PathCfg):
+  def __init__(self):
+    super(ImgPathCfg, self).__init__()
+
+    # manually provided in the cfg file
+    self.img_dir = ''
+    self.split_dir = ''
+    self.annotation_dir = ''
+    self.output_dir = ''
+
+    # automatically generated paths
+    self.trn_annotation_file = ''
+    self.trn_lst_file = ''
+    self.val_annotation_file = ''
+    self.val_lst_file = ''
+    self.word_file = ''
+
 
 def transform_predict_captionid_array_to_list(captionids): # (None, step)
   outs = []

@@ -6,6 +6,8 @@ sys.path.append('../')
 
 import numpy as np
 import torch
+import torchvision
+import cv2
 
 from base import framework
 
@@ -177,6 +179,85 @@ class TrnDiscriminatorReader(framework.Reader):
       }
 
 
+class TrnImgReader(framework.Reader):
+  def __init__(self, img_dir, lst_file, annotation_file):
+    self.ft_idxs = []
+    self.captionids = []
+    self.ft_idx2captionids = {}
+    self.img_names = []
+    self.img_dir = img_dir
+    self.num_ft = 0
+
+    self.transform = torchvision.transforms.Normalize(
+      mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+    self.img_names = np.load(lst_file)
+    self.num_ft = len(self.img_names)
+
+    with open(annotation_file, 'rb') as f:
+      self.ft_idxs, self.captionids = pickle.load(f)
+    self.num_caption = len(self.ft_idxs)
+    for ft_idx, captionid in zip(self.ft_idxs, self.captionids):
+      if ft_idx not in self.ft_idx2captionids:
+        self.ft_idx2captionids[ft_idx] = []
+      self.ft_idx2captionids[ft_idx].append(captionid[1:-1]) # remove BOS and EOS
+
+    self.shuffled_ft_idxs = self.ft_idx2captionids.keys()
+
+  def reset(self):
+    random.shuffle(self.shuffled_ft_idxs)
+
+  def yield_batch(self, batch_size):
+    for i in range(0, self.num_ft, batch_size):
+      start = i
+      end = i + batch_size
+      ft_idxs = self.shuffled_ft_idxs[start:end]
+
+      clean_ft_idxs = []
+      pos_captionids = []
+      neg_captionids = []
+      for ft_idx in ft_idxs:
+        captionids = self.ft_idx2captionids[ft_idx]
+        num = len(captionids)
+        if num < 5:
+          continue
+        pos_captionids += captionids[:5]
+
+        cnt = 0
+        while True and cnt < 5:
+          r = random.randint(0, self.num_caption-1)
+          if self.ft_idxs[r] != ft_idx:
+            neg_captionids.append(self.captionids[r][1:-1])
+            cnt += 1
+
+        clean_ft_idxs.append(ft_idx)
+      pos_lens = [len(d) for d in pos_captionids]
+      neg_lens = [len(d) for d in neg_captionids]
+
+      imgs = torch.zeros((len(clean_ft_idxs), 3, 450, 450))
+      masks = torch.zeros((len(clean_ft_idxs), 15, 15))
+      for j, ft_idx in enumerate(clean_ft_idxs):
+        img_file = os.path.join(self.img_dir, self.img_names[ft_idx])
+        img, h, w = load_and_norm_img(img_file, self.transform)
+        imgs[j, :, :h, :w] = img
+        if h > w:
+          rh = 15
+          rw = w * rh / h
+        else:
+          rw = 15
+          rh = h * rw / w
+        masks[j, :rh, :rw] = 1.
+      
+      yield {
+        'imgs': imgs,
+        'masks': masks,
+        'pos_captionids': pos_captionids,
+        'pos_caption_lens': pos_lens,
+        'neg_captionids': neg_captionids,
+        'neg_caption_lens': neg_lens,
+      }
+
+
 class ValDiscriminatorReader(framework.Reader):
   def __init__(self, ft_file, annotation_file):
     self.fts = np.empty(0)
@@ -232,6 +313,86 @@ class ValDiscriminatorReader(framework.Reader):
 
       yield {
         'fts': fts,
+        'pos_captionids': pos_captionids,
+        'pos_caption_lens': pos_lens,
+        'neg_captionids': neg_captionids,
+        'neg_caption_lens': neg_lens,
+      }
+
+
+class ValImgReader(framework.Reader):
+  def __init__(self, img_dir, lst_file, annotation_file):
+    self.ft_idx2pos_captionids = {}
+    self.ft_idx2neg_captionids = {}
+    self.img_dir = img_dir
+    self.img_names = []
+    self.num_ft = 0
+
+    self.transform = torchvision.transforms.Normalize(
+      mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+    self.img_names = np.load(lst_file)
+    self.num_ft = len(self.img_names)
+    # print lst_file, self.num_ft
+
+    with open(annotation_file, 'rb') as f:
+      ft_idxs, captionids = pickle.load(f)
+    for ft_idx, captionid in zip(ft_idxs, captionids):
+      if ft_idx not in self.ft_idx2pos_captionids:
+        self.ft_idx2pos_captionids[ft_idx] = []
+      self.ft_idx2pos_captionids[ft_idx].append(captionid[1:-1])
+
+    num_caption = len(captionids)
+    for ft_idx in self.ft_idx2pos_captionids:
+      pos_captionids = self.ft_idx2pos_captionids[ft_idx]
+      num = len(pos_captionids)
+      neg_captionids = []
+      cnt = 0
+      while True and cnt < num:
+        r = random.randint(0, num_caption-1)
+        if ft_idxs[r] != ft_idx:
+          neg_captionids.append(captionids[r][1:-1])
+          cnt += 1
+      self.ft_idx2neg_captionids[ft_idx] = neg_captionids
+
+  def yield_batch(self, batch_size):
+    for i in range(0, self.num_ft, batch_size):
+      start = i
+      end = min(i + batch_size, self.num_ft)
+
+      clean_ft_idxs = []
+      pos_captionids = []
+      neg_captionids = []
+      for ft_idx in range(start, end):
+        captionids = self.ft_idx2pos_captionids[ft_idx]
+        if len(captionids) < 5:
+          continue
+        pos_captionids += captionids[:5]
+
+        captionids = self.ft_idx2neg_captionids[ft_idx]
+        neg_captionids += captionids[:5]
+
+        clean_ft_idxs.append(ft_idx)
+      pos_lens = [len(d) for d in pos_captionids]
+      neg_lens = [len(d) for d in neg_captionids]
+
+      imgs = torch.zeros((len(clean_ft_idxs), 3, 450, 450))
+      masks = torch.zeros((len(clean_ft_idxs), 15, 15))
+      for j, ft_idx in enumerate(clean_ft_idxs):
+        img_file = os.path.join(self.img_dir, self.img_names[ft_idx])
+        img, h, w = load_and_norm_img(img_file, self.transform)
+        imgs[j, :, :h, :w] = img
+        if h > w:
+          rh = 15
+          rw = w * rh / h
+        else:
+          rw = 15
+          rh = h * rw / w
+        masks[j, :rh, :rw] = 1.
+      
+      yield {
+        'imgs': imgs,
+        'masks': masks,
         'pos_captionids': pos_captionids,
         'pos_caption_lens': pos_lens,
         'neg_captionids': neg_captionids,
@@ -558,3 +719,18 @@ class AttTrnSimpleGanReader(framework.Reader):
         'neg_captionids': neg_captionids,
         'neg_lens': neg_lens,
       }
+
+
+def load_and_norm_img(img_file, transform):
+  img = cv2.imread(img_file)
+  h, w, _ = img.shape
+  if max(h, w) > 450:
+    img = norm_img(img)
+  img = img[:, :, ::-1] # change to RGB
+  img = img / 255. # scale to [0, 1]
+  h, w, _ = img.shape
+  img = np.moveaxis(img, [0, 1, 2], [1, 2, 0]) # c, h, w
+  img = torch.from_numpy(img)
+  img = transform(img)
+
+  return img, h, w

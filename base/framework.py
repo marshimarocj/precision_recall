@@ -167,11 +167,11 @@ class TrnTst(object):
 
     base_epoch = self._load_and_place_device()
 
-    self.model.eval()
-    metrics = self.validation()
-    self.logger.info('epoch %d', base_epoch)
-    for key in metrics:
-      self.logger.info('%s:%f', key, metrics[key])
+    # self.model.eval()
+    # metrics = self.validation()
+    # self.logger.info('epoch %d', base_epoch)
+    # for key in metrics:
+    #   self.logger.info('%s:%f', key, metrics[key])
 
     step = 0
     history = []

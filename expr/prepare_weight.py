@@ -12,6 +12,8 @@ import model.vead_gan_simple_sc
 import driver.vead_gan_simple_sc
 import model.vead_gan_cider_sc
 import driver.vead_gan_cider_sc
+import model.deep_discriminator
+import driver.deep_discriminator
 
 
 def prepare_rl_from_ml():
@@ -193,9 +195,43 @@ def prepare_for_vead_gan():
   }, out_file)
 
 
+def prepare_for_deep_discriminator():
+  root_dir = '/mnt/data1/jiac/mscoco/pytorch' # neptune
+
+  discriminator_model_file = os.path.join(root_dir, 'simple_discriminator', 'resnet152_450.512.1.512.lstm', 'model', 'epoch-20.pth')
+  cnn_model_file = '/home/jiac/models/pytorch/resnet/resnet152-b121ed2d.pth'
+  expr_name = os.path.join(root_dir, 'deep_discriminator', 'resnet152.512.1.512.lstm')
+
+  model_cfg_file = expr_name + '.model.json'
+  path_cfg_file = expr_name + '.path.json'
+  out_file = os.path.join(expr_name, 'model', 'pretrain.pth')
+
+  path_cfg = driver.deep_discriminator.gen_dir_struct_info(path_cfg_file)
+  model_cfg = driver.deep_discriminator.load_and_fill_model_cfg(model_cfg_file, path_cfg)
+
+  m = model.deep_discriminator.Model(model_cfg)
+
+  print 'model'
+
+  data = torch.load(discriminator_model_file)
+  m.load_state_dict(data['state_dict'], strict=False)
+
+  print 'load cnn'
+  data = torch.load(cnn_model_file)
+  m.cnn.load_state_dict(data, strict=True)
+
+  torch.save({
+    'state_dict': m.state_dict(),
+    'optimizer': None,
+    'epoch': None,
+  }, out_file)
+
+
+
 if __name__ == '__main__':
   # prepare_rl_from_ml()
   # prepare_for_gan_simple()
   # prepare_for_gan()
   # prepare_for_vead_gan_simple()
-  prepare_for_vead_gan()
+  # prepare_for_vead_gan()
+  prepare_for_deep_discriminator()
