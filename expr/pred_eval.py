@@ -442,7 +442,7 @@ def predict_decode():
   # python_file = 'vead_gan_cider_sc.py'
 
   model_name = 'pytorch/vead_gan_simple_cider_sc_expr/bottomup.512.512.512.512.2048.add.64.8.5.0.80.5.0'
-  python_file = 'vead_gan_simple_cider_sc.py'
+  python_file = 'vead_gan_simple_sc.py'
 
   logdir = os.path.join(root_dir, model_name, 'log')
   preddir = os.path.join(root_dir, model_name, 'pred')
