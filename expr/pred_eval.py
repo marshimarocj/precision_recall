@@ -689,7 +689,7 @@ def eval_precision_by_sent():
     json.dump(vid2out, fout)
 
 
-def eval_precision_only():
+# def eval_precision_only():
   # root_dir = '/data1/jiac/mscoco' # mercurial
   # root_dir = '/data1/jiac/MSCOCO' # uranus
   root_dir = '/hdd/mscoco' # aws
@@ -852,8 +852,8 @@ if __name__ == '__main__':
   # predict_decode()
   # gather_predict_score()
   # eval_precision_recall()
-  eval_precision_only()
+  # eval_precision_only()
   # predict_eval_discriminator()
   # fuse_precision()
   # eval_human()
-  # eval_precision_by_sent()
+  eval_precision_by_sent()
