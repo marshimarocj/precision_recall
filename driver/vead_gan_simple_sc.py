@@ -60,6 +60,7 @@ if __name__ == '__main__':
     path_cfg.model_file = os.path.join(path_cfg.model_dir, 'epoch-%d.pth'%opts.best_epoch)
     model_cfg.subcfgs[model.vead_gan_simple_sc.DEC].beam_width = opts.beam_width
     model_cfg.strategy = opts.strategy
+    model_cfg.pool_size = opts.pool_size
     if model_cfg.strategy == 'beam':
       if opts.pool_size > 1:
         path_cfg.predict_file = os.path.join(path_cfg.output_dir, 'pred', '%d-%s-%d-%d.json'%(
